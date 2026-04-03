@@ -1,0 +1,46 @@
+'use client';
+import { Button } from "@/components/ui/button";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+
+
+function Navbar(){
+  
+    return (
+    <nav className="p-4 md:p-6 shadow-md bg-gray-900 text-white">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+        <a href="#" className="text-xl font-bold mb-4 md:mb-0">
+          True Feedback
+        </a>
+       {status === "loading" ? (
+  <Button
+    disabled className="w-full md:w-auto bg-slate-100 text-black"
+  >
+    Loading...
+  </Button>
+) : status === "authenticated" ? (
+  <>
+    <span className="mr-4">
+      Welcome
+    </span>
+    <Button
+      onClick={() => signOut()}
+      className="w-full md:w-auto bg-slate-100 text-black hover:text-white hover:bg-gray-600"
+    >
+      Logout
+    </Button>
+  </>
+) : (
+  <Link href="/sign-in">
+    <Button className="w-full md:w-auto bg-slate-100 text-black hover:text-white hover:bg-gray-600">
+      Login
+    </Button>
+  </Link>
+)}
+
+      </div>
+    </nav>
+  )
+}
+
+export default Navbar;
