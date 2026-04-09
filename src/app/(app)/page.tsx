@@ -2,14 +2,6 @@
 
 import { useState } from "react";
 
-// ─── Palette ────────────────────────────────────────────
-//  bg        : #FFFFFF  pure white
-//  surface   : #F4F7FF  soft blue-white for sections
-//  primary   : #0057FF  electric blue
-//  dark      : #050F2C  near-black navy for text
-//  muted     : #6B7A99  slate for secondary text
-//  accent    : #FF3D6B  hot pink for sell / highlights
-// ────────────────────────────────────────────────────────
 
 export default function SnapShopLanding() {
   const [mode, setMode] = useState<"buy" | "sell">("buy");
@@ -43,7 +35,6 @@ export default function SnapShopLanding() {
   return (
     <div style={{ background: "#fff", color: "#050F2C", fontFamily: "system-ui,sans-serif", overflowX: "hidden" }}>
 
-      {/* ── NAV ── */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
         background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)",
@@ -112,36 +103,10 @@ export default function SnapShopLanding() {
             </span>
           </div>
 
-          {/* GIANT TEXT + tiny hands */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative", userSelect: "none" }}>
 
-            {/* LEFT tiny hand */}
-            <div style={{ flexShrink: 0, position: "relative", top: 16, marginRight: -14, animation: "floatHand 3s ease-in-out infinite", zIndex: 2 }}>
-              <svg width="70" height="108" viewBox="0 0 72 110" fill="none" style={{ filter: "drop-shadow(0 6px 18px rgba(0,87,255,0.25))" }}>
-                <path d="M36 110 Q36 85 36 72" stroke="#FFCBA4" strokeWidth="16" strokeLinecap="round" fill="none"/>
-                <ellipse cx="36" cy="65" rx="18" ry="13" fill="#FFCBA4"/>
-                <rect x="18" y="36" width="9" height="32" rx="4.5" fill="#FFCBA4"/>
-                <rect x="28" y="30" width="9" height="38" rx="4.5" fill="#FFD9BE"/>
-                <rect x="38" y="28" width="9" height="40" rx="4.5" fill="#FFD9BE"/>
-                <rect x="48" y="32" width="8" height="36" rx="4" fill="#FFCBA4"/>
-                <rect x="8" y="52" width="9" height="26" rx="4.5" fill="#FFCBA4" transform="rotate(-25 8 52)"/>
-                {/* bag handle */}
-                <path d="M18 54 Q16 36 27 33 Q38 30 40 54" stroke="#050F2C" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                {/* bag body */}
-                <rect x="8" y="54" width="42" height="36" rx="6" fill="url(#lbBlue)"/>
-                <rect x="13" y="59" width="32" height="26" rx="4" fill="white" opacity="0.15"/>
-                <rect x="23" y="52" width="14" height="5" rx="2.5" fill="#050F2C"/>
-                <text x="29" y="76" textAnchor="middle" fontSize="8" fontWeight="900" fill="white" fontFamily="sans-serif">SS</text>
-                <defs>
-                  <linearGradient id="lbBlue" x1="8" y1="54" x2="50" y2="90" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#0057FF"/>
-                    <stop offset="100%" stopColor="#003BB5"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+           
 
-            {/* BIG WORD */}
             <div style={{ position: "relative", zIndex: 3 }}>
               <h1 style={{
                 fontSize: "clamp(70px,15vw,175px)",
@@ -155,7 +120,6 @@ export default function SnapShopLanding() {
                 Snap
                 <span style={{ color: "#0057FF", position: "relative", display: "inline-block" }}>
                   Shop
-                  {/* underline swoosh */}
                   <svg style={{ position: "absolute", bottom: -4, left: 0, width: "100%" }} viewBox="0 0 320 14" fill="none" preserveAspectRatio="none">
                     <path d="M4 10 Q80 2 160 10 Q240 18 316 10" stroke="#FF3D6B" strokeWidth="5" strokeLinecap="round"/>
                   </svg>
@@ -163,38 +127,14 @@ export default function SnapShopLanding() {
               </h1>
             </div>
 
-            {/* RIGHT tiny hand */}
-            <div style={{ flexShrink: 0, position: "relative", top: 16, marginLeft: -14, animation: "floatHand 3s ease-in-out infinite 0.6s", zIndex: 2 }}>
-              <svg width="70" height="108" viewBox="0 0 72 110" fill="none" style={{ transform: "scaleX(-1)", filter: "drop-shadow(0 6px 18px rgba(255,61,107,0.25))" }}>
-                <path d="M36 110 Q36 85 36 72" stroke="#FFCBA4" strokeWidth="16" strokeLinecap="round" fill="none"/>
-                <ellipse cx="36" cy="65" rx="18" ry="13" fill="#FFCBA4"/>
-                <rect x="18" y="36" width="9" height="32" rx="4.5" fill="#FFCBA4"/>
-                <rect x="28" y="30" width="9" height="38" rx="4.5" fill="#FFD9BE"/>
-                <rect x="38" y="28" width="9" height="40" rx="4.5" fill="#FFD9BE"/>
-                <rect x="48" y="32" width="8" height="36" rx="4" fill="#FFCBA4"/>
-                <rect x="8" y="52" width="9" height="26" rx="4.5" fill="#FFCBA4" transform="rotate(-25 8 52)"/>
-                <path d="M18 54 Q16 36 27 33 Q38 30 40 54" stroke="#050F2C" strokeWidth="3" strokeLinecap="round" fill="none"/>
-                <rect x="8" y="54" width="42" height="36" rx="6" fill="url(#rbPink)"/>
-                <rect x="13" y="59" width="32" height="26" rx="4" fill="white" opacity="0.15"/>
-                <rect x="23" y="52" width="14" height="5" rx="2.5" fill="#050F2C"/>
-                <text x="29" y="76" textAnchor="middle" fontSize="8" fontWeight="900" fill="white" fontFamily="sans-serif">SS</text>
-                <defs>
-                  <linearGradient id="rbPink" x1="8" y1="54" x2="50" y2="90" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#FF3D6B"/>
-                    <stop offset="100%" stopColor="#C0002D"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+           
           </div>
 
-          {/* Tagline */}
           <p style={{ marginTop: 28, fontSize: 20, color: "#6B7A99", fontWeight: 500, maxWidth: 440 }}>
             The marketplace that moves as fast as you do.{" "}
             <strong style={{ color: "#0057FF" }}>Snap it. List it. Sell it.</strong>
           </p>
 
-          {/* Hero CTAs */}
           <div style={{ marginTop: 36, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
             <button style={{
               padding: "15px 36px", borderRadius: 999, fontWeight: 800, fontSize: 16, border: "none", cursor: "pointer",
@@ -214,7 +154,6 @@ export default function SnapShopLanding() {
             </button>
           </div>
 
-          {/* Scroll hint */}
           <div style={{ marginTop: 48, display: "flex", alignItems: "center", gap: 6, color: "#6B7A99", fontSize: 13, animation: "floatHand 2.5s ease-in-out infinite" }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             Scroll to explore
@@ -222,7 +161,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ── BUY / SELL ── */}
       <section id="features" style={{ padding: "96px 24px", background: "#F4F7FF" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
@@ -230,7 +168,6 @@ export default function SnapShopLanding() {
             <p style={{ marginTop: 10, fontSize: 17, color: "#6B7A99" }}>Choose your path — SnapShop handles the rest.</p>
           </div>
 
-          {/* Toggle */}
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 40 }}>
             <div style={{ display: "inline-flex", padding: 6, borderRadius: 20, background: "#fff", boxShadow: "0 2px 16px rgba(0,87,255,0.1)", gap: 4 }}>
               {(["buy","sell"] as const).map(m => (
@@ -249,7 +186,6 @@ export default function SnapShopLanding() {
             </div>
           </div>
 
-          {/* Form card */}
           <div style={{
             background: "#fff", borderRadius: 28, overflow: "hidden",
             boxShadow: "0 20px 60px rgba(0,87,255,0.1)", border: "1.5px solid #E4EAFF",
@@ -382,7 +318,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" style={{ padding: "96px 24px", background: "#050F2C", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -100, right: -100, width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle,rgba(0,87,255,0.25),transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: -80, left: -80, width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle,rgba(255,61,107,0.2),transparent 70%)", pointerEvents: "none" }} />
@@ -413,7 +348,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ── CATEGORIES ── */}
       <section id="categories" style={{ padding: "96px 24px", background: "#fff" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 52 }}>
@@ -449,7 +383,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ── STATS ── */}
       <section style={{ padding: "80px 24px", background: "linear-gradient(135deg,#0057FF 0%,#003BB5 60%,#FF3D6B 100%)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 32, textAlign: "center", color: "#fff" }}>
           {[
@@ -466,7 +399,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
       <section style={{ padding: "96px 24px", background: "#F4F7FF", textAlign: "center" }}>
         <h2 style={{ fontSize: 44, fontWeight: 900, color: "#050F2C", letterSpacing: "-0.03em", margin: 0 }}>Get early access 🎉</h2>
         <p style={{ marginTop: 12, fontSize: 17, color: "#6B7A99" }}>Be the first to know when we launch in your city. No spam, just good deals.</p>
@@ -485,7 +417,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
       <footer style={{ background: "#050F2C", padding: "64px 24px", color: "rgba(255,255,255,0.5)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: 48, marginBottom: 48 }}>
