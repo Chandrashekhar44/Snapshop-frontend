@@ -26,7 +26,7 @@ export default function SnapShopLanding() {
     padding: "12px 16px",
     fontSize: 14,
     outline: "none",
-    background: "#fff",
+    background: "#F4EFE6",
     border: "2px solid #E4EAFF",
     color: "#050F2C",
     ...extra,
@@ -42,7 +42,7 @@ export default function SnapShopLanding() {
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.04em", color: "#050F2C" }}>
-            snap<span style={{ color: "#0057FF" }}>shop</span>
+            snap<span style={{ color: "#FF3B30" }}>shop</span>
           </span>
           <div style={{ display: "flex", gap: 32, fontSize: 14, fontWeight: 600, color: "#6B7A99" }}>
             {["Features","How It Works","Categories"].map(l => (
@@ -67,10 +67,8 @@ export default function SnapShopLanding() {
         </div>
       </nav>
 
-      {/* ── HERO ── */}
       <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: 80, position: "relative", overflow: "hidden" }}>
 
-        {/* Big blue circle decoration */}
         <div style={{
           position: "absolute", top: -120, right: -180, width: 620, height: 620,
           borderRadius: "50%", background: "linear-gradient(135deg,#0057FF 0%,#3B82F6 100%)",
@@ -82,7 +80,6 @@ export default function SnapShopLanding() {
           opacity: 0.07, pointerEvents: "none",
         }} />
 
-        {/* Dot grid */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.12,
           backgroundImage: "radial-gradient(circle, #0057FF 1.2px, transparent 1.2px)",
@@ -91,7 +88,6 @@ export default function SnapShopLanding() {
 
         <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
 
-          {/* Badge */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "#EEF3FF", border: "1.5px solid #C7D7FF",
@@ -118,10 +114,10 @@ export default function SnapShopLanding() {
                 margin: 0,
               }}>
                 Snap
-                <span style={{ color: "#0057FF", position: "relative", display: "inline-block" }}>
+                <span style={{ color: "#003B8E", position: "relative", display: "inline-block" }}>
                   Shop
                   <svg style={{ position: "absolute", bottom: -4, left: 0, width: "100%" }} viewBox="0 0 320 14" fill="none" preserveAspectRatio="none">
-                    <path d="M4 10 Q80 2 160 10 Q240 18 316 10" stroke="#FF3D6B" strokeWidth="5" strokeLinecap="round"/>
+                    <path d="M4 10 Q80 2 160 10 Q240 18 316 10" stroke="#00000" strokeWidth="5" strokeLinecap="round"/>
                   </svg>
                 </span>
               </h1>
@@ -138,7 +134,7 @@ export default function SnapShopLanding() {
           <div style={{ marginTop: 36, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
             <button style={{
               padding: "15px 36px", borderRadius: 999, fontWeight: 800, fontSize: 16, border: "none", cursor: "pointer",
-              background: "#0057FF", color: "#fff", boxShadow: "0 6px 28px rgba(0,87,255,0.35)", transition: "transform .15s",
+              background: "#003B8E", color: "#fff", boxShadow: "0 6px 28px rgba(0,87,255,0.35)", transition: "transform .15s",
             }}
               onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
               onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
