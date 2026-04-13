@@ -45,19 +45,16 @@ export default function SnapShopLanding() {
       className="bg-white text-[#050F2C] overflow-x-hidden"
       style={{ fontFamily: "system-ui,sans-serif" }}
     >
-      {/* ─────────────── NAVBAR ─────────────── */}
     <nav
   className="fixed top-0 left-0 right-0 z-50 border-b border-[#E4EAFF]"
   style={{ background: "rgba(255,255,255,0.92)" }}
 >
   <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
 
-    {/* Logo */}
     <span className="text-[22px] font-black tracking-[-0.04em] text-[#050F2C]">
       snap<span className="text-[#003B8E]">shop</span>
     </span>
 
-    {/* Desktop Links */}
     <div className="hidden md:flex gap-8 text-sm font-semibold">
       {["Features", "How It Works", "Categories", "Notify"].map((l) => {
         const id = l.toLowerCase().replace(/ /g, "-");
@@ -78,10 +75,8 @@ export default function SnapShopLanding() {
       })}
     </div>
 
-    {/* RIGHT SIDE (always visible login + mobile menu) */}
     <div className="flex items-center gap-3">
 
-      {/* Login (always visible) */}
       <button
         onClick={() => router.push("/sign-in")}
         className="text-sm font-extrabold px-[22px] py-[10px] rounded-full text-white transition-transform"
@@ -95,21 +90,17 @@ export default function SnapShopLanding() {
         Log In
       </button>
 
-      {/* Mobile Menu Button */}
       {menuOpen && (
   <div className="fixed inset-0 z-[60]  ">
 
 
-    {/* BACKDROP */}
     <div
   className="fixed inset-0 z-[60] bg-black/60 "
       onClick={() => setMenuOpen(false)}
     />
 
-    {/* MENU */}
     <div className="fixed top-20 left-1/2 -translate-x-1/2 w-[85%] max-w-[340px] bg-white rounded-2xl shadow-2xl p-6 z-[70]">
 
-      {/* close */}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setMenuOpen(false)}
@@ -119,7 +110,6 @@ export default function SnapShopLanding() {
         </button>
       </div>
 
-      {/* links */}
       <div className="flex flex-col gap-5 text-center font-semibold text-[#26282b]">
 
         {["Features", "How It Works", "Categories", "Notify"].map((l) => {
@@ -165,13 +155,11 @@ export default function SnapShopLanding() {
 
 
 
-      {/* ─────────────── HERO ─────────────── */}
       <section
         id ="features"
         className="min-h-screen flex items-center justify-center relative overflow-hidden"
         style={{ paddingTop: 80 }}
       >
-        {/* Blue blob */}
         <div
           className="absolute rounded-full pointer-events-none"
           style={{
@@ -180,7 +168,6 @@ export default function SnapShopLanding() {
             opacity: 0.08,
           }}
         />
-        {/* Pink blob */}
         <div
           className="absolute rounded-full pointer-events-none"
           style={{
@@ -189,7 +176,6 @@ export default function SnapShopLanding() {
             opacity: 0.07,
           }}
         />
-        {/* Dot grid */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -200,7 +186,6 @@ export default function SnapShopLanding() {
         />
 
         <div className="relative max-w-[1200px] mx-auto px-6 flex flex-col items-center text-center">
-          {/* Live badge */}
           <div
             className="inline-flex items-center gap-2 rounded-full mb-9"
             style={{
@@ -218,7 +203,6 @@ export default function SnapShopLanding() {
             </span>
           </div>
 
-          {/* Big headline */}
           <div className="flex items-center justify-center relative select-none">
             <div className="relative z-[3]">
               <h1
@@ -251,13 +235,11 @@ export default function SnapShopLanding() {
             </div>
           </div>
 
-          {/* Tagline */}
           <p className="mt-7 text-xl text-[#6B7A99] font-medium max-w-[440px]">
             The marketplace that moves as fast as you do.{" "}
             <strong className="text-[#003B8E]">Snap it. List it. Sell it.</strong>
           </p>
 
-          {/* CTA buttons */}
           <div className="mt-9 flex gap-4 flex-wrap justify-center">
             <button
               className="rounded-full font-extrabold text-base border-none cursor-pointer text-white transition-transform"
@@ -273,19 +255,11 @@ export default function SnapShopLanding() {
               
             }}
             >
-              🛍️ Start Buying
+              🛍️ Choose here to Buy or Sell
             </button>
-            <button
-              className="rounded-full font-extrabold text-base cursor-pointer bg-white text-[#003B8E] transition-transform"
-              style={{ padding: "15px 36px", border: "2.5px solid #003B8E" }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
-              💰 Start Selling
-            </button>
+            
           </div>
 
-          {/* Scroll hint */}
           <div
             className="mt-12 flex items-center gap-[6px] text-[#6B7A99] text-[13px]"
             style={{ animation: "floatHand 2.5s ease-in-out infinite" }}
@@ -306,7 +280,6 @@ export default function SnapShopLanding() {
 
      
 
-      {/* ─────────────── HOW IT WORKS ─────────────── */}
       <section
         id="how-it-works"
         className="relative overflow-hidden"
@@ -382,7 +355,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ─────────────── CATEGORIES ─────────────── */}
       <section id="categories" style={{ padding: "96px 24px", background: "#fff" }}>
         <div className="max-w-[1100px] mx-auto">
           <div className="text-center mb-[52px]">
@@ -448,7 +420,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ─────────────── STATS ─────────────── */}
       <section
        
         style={{
@@ -474,7 +445,6 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ─────────────── EARLY ACCESS ─────────────── */}
       <section
        id ="notify"
        style={{ padding: "96px 24px", background: "#F4F7FF", textAlign: "center" }}>
@@ -516,15 +486,12 @@ export default function SnapShopLanding() {
         </div>
       </section>
 
-      {/* ─────────────── FOOTER ─────────────── */}
       <footer style={{ background: "#050F2C", padding: "64px 24px", color: "rgba(255,255,255,0.5)" }}>
         <div className="max-w-[1200px] mx-auto">
-          {/* Footer grid */}
           <div
             className="mb-12"
             style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: 48 }}
           >
-            {/* Brand col */}
             <div>
               <div
                 className="font-black text-white"
@@ -535,7 +502,6 @@ export default function SnapShopLanding() {
               <p style={{ fontSize: 13, lineHeight: 1.7, margin: 0 }}>
                 India's fastest growing marketplace for buying and selling everything.
               </p>
-              {/* Social icons */}
               <div className="flex gap-[10px] mt-4">
                 {["𝕏","in","f","▶"].map((ic, i) => (
                   <div
@@ -563,7 +529,6 @@ export default function SnapShopLanding() {
               </div>
             </div>
 
-            {/* Link columns */}
             {[
               { title: "Marketplace", links: ["Browse All","Featured Deals","New Arrivals","Flash Sales"] },
               { title: "Sellers",     links: ["Start Selling","Seller Dashboard","Pricing","Seller Stories"] },
@@ -589,7 +554,6 @@ export default function SnapShopLanding() {
             ))}
           </div>
 
-          {/* Footer bottom */}
           <div
             className="flex justify-between items-center"
             style={{
@@ -606,7 +570,6 @@ export default function SnapShopLanding() {
         </div>
       </footer>
 
-      {/* ─────────────── KEYFRAMES ─────────────── */}
       <style>{`
         @keyframes floatHand {
           0%, 100% { transform: translateY(0px); }
