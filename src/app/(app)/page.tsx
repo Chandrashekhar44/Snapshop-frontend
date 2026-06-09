@@ -1,5 +1,6 @@
 "use client";
 
+import AuthButton from "@/components/authButton";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,6 +14,9 @@ export default function SnapShopLanding() {
   const [category, setCategory] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+    const [userId, setUserId] = useState<string | null>(null);
+
 
 
   const router = useRouter();
@@ -32,13 +36,17 @@ export default function SnapShopLanding() {
   
 
   
-
   const categories = [
     "Electronics","Fashion","Home & Garden","Sports","Books","Beauty","Toys","Automotive",
   ];
 
   const inputBase =
     "w-full rounded-2xl px-4 py-3 text-sm outline-none text-[#050F2C] bg-[#F4EFE6]";
+
+    useEffect(() => {
+    setUserId(localStorage.getItem("token"));
+  }, []);
+
 
   return (
     <div
@@ -52,7 +60,7 @@ export default function SnapShopLanding() {
   <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
 
     <span className="text-[22px] font-black tracking-[-0.04em] text-[#050F2C]">
-      snap<span className="text-[#003B8E]">shop</span>
+      Snap<span className="text-[#003B8E]">Shop</span>
     </span>
 
     <div className="hidden md:flex gap-8 text-sm font-semibold">
@@ -77,18 +85,18 @@ export default function SnapShopLanding() {
 
     <div className="flex items-center gap-3">
 
-      <button
-        onClick={() => router.push("/sign-in")}
-        className="text-sm font-extrabold px-[22px] py-[10px] rounded-full text-white transition-transform"
-        style={{
-          background: "#003B8E",
-          boxShadow: "0 4px 18px rgba(0,87,255,0.35)",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-      >
-        Log In
-      </button>
+    {userId? <button
+    onClick={() => router.replace("/dashboard")}
+    className="bg-black text-white px-5 py-2 rounded-full"
+  >
+    Dashboard
+  </button> :<button
+    onClick={() => router.replace("/sign-in")}
+    className="bg-black text-white px-5 py-2 rounded-full"
+  >
+    Log In
+  </button>  
+  }
 
       {menuOpen && (
   <div className="fixed inset-0 z-[60]  ">
@@ -250,10 +258,12 @@ export default function SnapShopLanding() {
               }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            onClick={()=>{
-              router.push('/sellOrBuy')
-              
-            }}
+             onClick={async () => {
+   
+
+      router.push("/sellOrBuy");
+
+             }}
             >
               🛍️ Choose here to Buy or Sell
             </button>
