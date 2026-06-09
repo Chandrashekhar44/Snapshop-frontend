@@ -11,8 +11,9 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { ConstructionIcon, Loader2 } from "lucide-react";
 import axios from "axios";
+import { connectSocket } from "@/lib/socket";
 
 type ResendVerificationResponse = {
   success: boolean;
@@ -22,7 +23,6 @@ type ResendVerificationResponse = {
 
 export default function SignInForm() {
     const router = useRouter()
-    const {toast} = useToast();
     const [isSubmitting,setisSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof signInSchema>>({
@@ -33,63 +33,56 @@ export default function SignInForm() {
         }
     })
 
+       const onSubmit = async (
+  data: z.infer<typeof signInSchema>
+) => {
 
-    const onSubmit = async function (data: z.infer<typeof signInSchema>) {
-        setisSubmitting(true);
-        const result = await signIn('credentials', {
-            redirect: false,
-            identifier: data.identifier,
-            password: data.password
-        })
-      
+  try {
 
-        if (result?.error) {
-            if (result.error === "NotVerified") {
-    toast({
-      title: "Account not verified",
-      description: "Please verify your account first.",
-      variant: "destructive",
-    });
+    setisSubmitting(true);
 
-   try {
-    const response = await axios.post<ResendVerificationResponse>("/api/resend-verification", {
-      identifier: data.identifier,
-    });
-     console.log(response.data);
-    toast({
-      title: "Verification email sent",
-      description: response.data.message,
-    });
+    const response = await axios.post(
+      "http://localhost:5001/api/auth/login",
+      {
+        identifier:
+          data.identifier,
+        password:
+          data.password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
-    router.replace(`/verify/${response.data.username}`);
+    alert('User logged in successfully')
+    localStorage.setItem("token",response.data.accessToken)
+    console.log(response.data.user.id)
+    localStorage.setItem("userId",response.data.user.id)
+    connectSocket();
+    router.replace(
+      "/dashboard"
+    );
+
   } catch (error: any) {
-    toast({
-      title: "Error",
-      description:
-        error.response?.data?.message ||
-        "Failed to send verification email",
-      variant: "destructive",
-    });
+
+  console.log(error);
+
+  
+
+  alert(
+    error ||
+    "Error while logging in"
+  );
+
+} finally {
+
+    setisSubmitting(false);
+
   }
-
-}
-     else {
-                toast({
-                    title:'Error',
-                    description:result.error,
-                    variant:  'destructive'
-                })
-
-            }
-        }
-        setisSubmitting(false);
-
-        if (result?.url) {
-            router.replace('/dashboard')
-        }
+};
 
 
-    }
+    
 
 
     return (<div className="flex justify-center items-center min-h-screen bg-black">

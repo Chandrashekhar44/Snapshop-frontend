@@ -1,8 +1,7 @@
 "use client"
 import { useState } from "react";
 import { FormEvent } from "react";
-import axios
- from "axios";
+import axios from "axios";
 export default function sellAndBuyForm(){
 
      const [mode, setMode] = useState<"buy" | "sell">("buy");
@@ -50,7 +49,25 @@ const inputBase =
 
   const categories = [
     "Electronics","Fashion","Home & Garden","Sports","Books","Beauty","Toys","Automotive",
-  ];    
+  ];  
+  
+  
+
+const handleClick = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5001/api/auth/login",
+      {
+        email: "test@gmail.com",
+        password: "123456",
+      }
+    );
+
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
 
@@ -58,7 +75,6 @@ const inputBase =
 
     return (<section id="features" style={{ padding: "96px 24px", background: "#F4F7FF" }}>
         <div className="max-w-[860px] mx-auto">
-          {/* Heading */}
           <div className="text-center mb-12">
             <h2
               className="font-black text-[#050F2C] m-0"
@@ -71,7 +87,6 @@ const inputBase =
             </p>
           </div>
 
-          {/* Toggle */}
           <div className="flex justify-center mb-10">
             <div
               className="inline-flex gap-1"
@@ -106,7 +121,6 @@ const inputBase =
             </div>
           </div>
 
-          {/* Form card */}
           <div
             className="bg-white overflow-hidden"
             style={{
@@ -115,7 +129,6 @@ const inputBase =
               border: "1.5px solid #003B8E",
             }}
           >
-            {/* Top colour bar */}
             <div
               style={{
                 height: 5,
@@ -127,7 +140,6 @@ const inputBase =
             />
             <div style={{ padding: "40px 48px" }}>
 
-              {/* ── BUY ── */}
               {mode === "buy" ? (
                 <>
                   <div className="flex items-center gap-[14px] mb-7">
@@ -146,7 +158,6 @@ const inputBase =
                   </div>
 
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-                    {/* Row 1 */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
@@ -180,7 +191,6 @@ const inputBase =
                       </div>
                     </div>
 
-                    {/* Row 2 — 3 cols */}
                     <div className="grid grid-cols-3 gap-4">
                       {[["Min Price (₹)", "0"], ["Max Price (₹)", "99,999"]].map(([lbl, ph]) => (
                         <div key={lbl}>
@@ -212,7 +222,6 @@ const inputBase =
                       </div>
                     </div>
 
-                    {/* Email */}
                     <div>
                       <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
                         Your Email
@@ -229,7 +238,6 @@ const inputBase =
                       />
                     </div>
 
-                    {/* Submit */}
                     <button
                       type="submit"
                       className="w-full font-black text-base border-none cursor-pointer text-white transition-transform"
@@ -241,13 +249,15 @@ const inputBase =
                       }}
                       onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      onClick={()=>{
+                        
+                      }}
                     >
                       {submitted ? "✅ We'll notify you!" : "🔍 Search Deals"}
                     </button>
                   </form>
                 </>
               ) : (
-                /* ── SELL ── */
                 <>
                   <div className="flex items-center gap-[14px] mb-7">
                     <div
@@ -265,7 +275,6 @@ const inputBase =
                   </div>
 
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-                    {/* Row 1 */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
@@ -299,7 +308,6 @@ const inputBase =
                       </div>
                     </div>
 
-                    {/* Row 2 */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
@@ -331,7 +339,6 @@ const inputBase =
                       </div>
                     </div>
 
-                    {/* Description */}
                     <div>
                       <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
                         Description
@@ -346,7 +353,6 @@ const inputBase =
                       />
                     </div>
 
-                    {/* Email */}
                     <div>
                       <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
                         Your Email
@@ -363,7 +369,6 @@ const inputBase =
                       />
                     </div>
 
-                    {/* Submit */}
                     <button
                       type="submit"
                       className="w-full font-black text-base border-none cursor-pointer text-white transition-transform"
@@ -376,7 +381,7 @@ const inputBase =
                       onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     >
-                      {submitted ? "✅ Listing Created!" : "🚀 List My Item — Free"}
+                      {submitted ? "Listing Created!" : "List My Item — Free"}
                     </button>
                   </form>
                 </>
