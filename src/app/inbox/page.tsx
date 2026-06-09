@@ -1,7 +1,7 @@
 import SellerInboxPage from "@/components/message-components/SellerInboxPage";
 
 export default function Page() {
-  return <SellerInboxPage />;
+  return <SellerInboxPage/>;
 }
 
 export const metadata = {
