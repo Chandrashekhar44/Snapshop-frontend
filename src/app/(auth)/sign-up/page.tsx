@@ -9,7 +9,7 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
 import {signupSchema} from '../../../schemas/signupSchema'
@@ -44,15 +44,47 @@ export default function SignInForm() {
         }
     })
 
+  const [location, setLocation] = useState({
+  latitude: null as number | null,
+  longitude: null as number | null,
+});
+
+const geoLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (error) => {
+        console.error(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 0,
+      }
+    );
+  };
+
+ useEffect(() => {
+  
+  geoLocation();
+}, []);
 
 const onSubmit = async (data: z.infer<typeof signupSchema>) => {
   try {
     setisSubmitting(true);
 
-    const result = await axios.post(
-      "http://localhost:5001/api/auth/register",
-      data
-    );
+    const result =await axios.post(
+  "http://localhost:5001/api/auth/register",
+  {
+    ...data,
+    latitude: location.latitude,
+    longitude: location.longitude,
+  }
+);
 
     console.log(result.data);
 
@@ -201,6 +233,13 @@ const onSubmit = async (data: z.infer<typeof signupSchema>) => {
            
             
         </div>
+
+        <Button
+  type="button"
+  onClick={geoLocation}
+>
+  Enable Location
+</Button>
     </div>
     );
 
