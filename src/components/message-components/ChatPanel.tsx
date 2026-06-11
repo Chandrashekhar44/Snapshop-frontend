@@ -22,7 +22,7 @@ export default function ChatPanel({ thread, onSend, onAcceptOrder }: ChatPanelPr
   const isNearby = thread.distance <= PROXIMITY_THRESHOLD_KM;
   const lastMsg = thread.messages[thread.messages.length - 1];
   const showBanner =
-    isNearby && lastMsg?.role === "buyer" && lastMsg?.orderRequest != null;
+    isNearby && lastMsg?.orderRequest != null;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -169,13 +169,18 @@ function MessageBubble({
   initials: string;
   onAcceptOrder: () => void;
 }) {
-  const isBuyer = message.role === "buyer";
+  const currUserId = Number(localStorage.getItem("userId"));
+  console.log("currentIdn",currUserId);
+  console.log("Sender",message.senderId)
+  const isSender = Number(message.senderId) === currUserId;
+  console.log("issender",isSender)
+  console.log("message",message)
 
   return (
     <div
-      className={`mb-2 flex items-end gap-2 ${isBuyer ? "justify-start" : "justify-end"}`}
+      className={`mb-2 flex items-end gap-2 ${isSender ? "justify-end" : "justify-start"}`}
     >
-      {isBuyer && (
+      {isSender && (
         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-[10px] font-medium text-sky-700">
           {initials}
         </div>
@@ -183,9 +188,9 @@ function MessageBubble({
       <div className={`max-w-[68%]`}>
         <div
           className={`rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
-            isBuyer
-              ? "rounded-bl-sm bg-white text-gray-800 shadow-sm ring-1 ring-gray-100"
-              : "rounded-br-sm bg-blue-600 text-white"
+            isSender
+              ?"rounded-br-sm bg-blue-600 text-white"
+              :"rounded-bl-sm bg-white text-gray-800 shadow-sm ring-1 ring-gray-100"
           }`}
         >
           {message.text}
@@ -195,7 +200,7 @@ function MessageBubble({
         )}
         <p
           className={`mt-1 text-[10px] text-gray-400 ${
-            isBuyer ? "text-left" : "text-right"
+            isSender ? "text-right" : "text-left"
           }`}
         >
           {message.time}

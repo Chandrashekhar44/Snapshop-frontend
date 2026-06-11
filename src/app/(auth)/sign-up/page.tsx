@@ -32,6 +32,9 @@ export default function SignInForm() {
     const router = useRouter()
     const {toast} = useToast();
     const [isSubmitting,setisSubmitting] = useState(false);
+    const [loadingLocation, setLoadingLocation] =useState(false);
+
+
 
     const form = useForm<z.infer<typeof signupSchema>>({
         resolver: zodResolver(signupSchema),
@@ -58,8 +61,10 @@ const geoLocation = () => {
         });
       },
       (error) => {
-        console.error(error);
-      },
+  alert(
+    `Code: ${error.code}\nMessage: ${error.message}`
+  );
+},
       {
         enableHighAccuracy: true,
         timeout: 30000,
@@ -76,6 +81,18 @@ const geoLocation = () => {
 const onSubmit = async (data: z.infer<typeof signupSchema>) => {
   try {
     setisSubmitting(true);
+    if (
+  location.latitude === null ||
+  location.longitude === null
+) {
+  toast({
+    title: "Location Required",
+    description:
+      "Please enable location first.",
+  });
+
+  return;
+}
 
     const result =await axios.post(
   "http://localhost:5001/api/auth/register",
@@ -218,7 +235,26 @@ const onSubmit = async (data: z.infer<typeof signupSchema>) => {
       <FormMessage />
     </FormItem>
   )}
-/>
+/>                  
+                   <Button
+  type="button"
+  onClick={geoLocation}
+  disabled={
+    loadingLocation ||
+    location.latitude !== null
+  }
+>
+  {loadingLocation ? (
+    <>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Fetching Location...
+    </>
+  ) : location.latitude ? (
+    "✓ Location Enabled"
+  ) : (
+    "Enable Location"
+  )}
+</Button>
                     <Button className='w-full' type="submit" disabled={isSubmitting}
                     >{isSubmitting ? (
                                     <>
@@ -231,15 +267,11 @@ const onSubmit = async (data: z.infer<typeof signupSchema>) => {
                 </form>
             </Form>
            
+           
             
         </div>
 
-        <Button
-  type="button"
-  onClick={geoLocation}
->
-  Enable Location
-</Button>
+        
     </div>
     );
 
