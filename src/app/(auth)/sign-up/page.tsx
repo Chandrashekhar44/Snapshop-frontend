@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import axios from "axios";
+import axios from "@/lib/axios";
 import {signupSchema} from '../../../schemas/signupSchema'
 import {
   Select,
@@ -73,10 +73,7 @@ const geoLocation = () => {
     );
   };
 
- useEffect(() => {
-  
-  geoLocation();
-}, []);
+ 
 
 const onSubmit = async (data: z.infer<typeof signupSchema>) => {
   try {
@@ -262,7 +259,7 @@ const onSubmit = async (data: z.infer<typeof signupSchema>) => {
                                       Please wait
                                     </>
                                   ) : (
-                                    'Sign in'
+                                    'Sign up'
                                   )}</Button>
                 </form>
             </Form>
