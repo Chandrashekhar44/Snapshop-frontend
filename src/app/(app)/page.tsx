@@ -1,21 +1,17 @@
 "use client";
 
 import AuthButton from "@/components/authButton";
+import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function SnapShopLanding() {
-  const [mode, setMode] = useState<"buy" | "sell">("buy");
-  const [email, setEmail] = useState("");
-  const [search, setSearch] = useState("");
-  const [productName, setProductName] = useState("");
-  const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+
   const [menuOpen, setMenuOpen] = useState(false);
 
     const [userId, setUserId] = useState<string | null>(null);
+    const user = useAuthStore((state) => state.user);
 
 
 
@@ -85,13 +81,13 @@ export default function SnapShopLanding() {
 
     <div className="flex items-center gap-3">
 
-    {userId? <button
+    {user? <button
     onClick={() => router.replace("/dashboard")}
     className="bg-black text-white px-5 py-2 rounded-full"
   >
     Dashboard
   </button> :<button
-    onClick={() => router.replace("/sign-in")}
+    onClick={() => router.push("/sign-in")}
     className="bg-black text-white px-5 py-2 rounded-full"
   >
     Log In
