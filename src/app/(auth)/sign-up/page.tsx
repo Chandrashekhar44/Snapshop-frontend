@@ -92,7 +92,7 @@ const onSubmit = async (data: z.infer<typeof signupSchema>) => {
 }
 
     const result =await axios.post(
-  "http://localhost:5001/api/auth/register",
+  "http://localhost:4000/api/auth/register",
   {
     ...data,
     latitude: location.latitude,

@@ -4,16 +4,15 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { signInSchema } from "../../../schemas/signInSchema";
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { ConstructionIcon, Loader2 } from "lucide-react";
-import axios from "axios";
+import {  Loader2 } from "lucide-react";
+import axios from "@/lib/axios";
 import { connectSocket } from "@/lib/socket";
+import { useAuthStore } from "@/store/authStore";
 
 type ResendVerificationResponse = {
   success: boolean;
@@ -23,6 +22,7 @@ type ResendVerificationResponse = {
 
 export default function SignInForm() {
     const router = useRouter()
+      const { user, setUser } = useAuthStore();
     const [isSubmitting,setisSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof signInSchema>>({
@@ -33,16 +33,14 @@ export default function SignInForm() {
         }
     })
 
-       const onSubmit = async (
-  data: z.infer<typeof signInSchema>
-) => {
+       const onSubmit = async (data: z.infer<typeof signInSchema>) => {
 
   try {
 
     setisSubmitting(true);
 
     const response = await axios.post(
-      "http://localhost:5001/api/auth/login",
+      "http://localhost:4000/api/auth/login",
       {
         identifier:
           data.identifier,
@@ -55,10 +53,21 @@ export default function SignInForm() {
     );
 
     alert('User logged in successfully')
-    localStorage.setItem("token",response.data.accessToken)
-    console.log(response.data.user.id)
-    localStorage.setItem("userId",response.data.user.id)
+    console.log(response.data.data.id);
+
+localStorage.setItem(
+  "userId",
+  String(response.data.data.id)
+);
     connectSocket();
+    setUser(response.data.data);
+    setUser(response.data.data);
+
+console.log(
+  "Zustand after login:",
+  useAuthStore.getState().user
+);
+
     router.replace(
       "/dashboard"
     );
