@@ -1,6 +1,7 @@
 import { Coins, Package, Clock, Star, Store, Plus } from "lucide-react";
 import StatCard from "./StatCard";
 import StatusPill from "./StatusPill";
+import { useRouter } from "next/navigation";
 
 const ORDERS_TO_FULFIL = [
   { flag: "🇬🇧", name: "GB King George V 1d red — 3 pcs",   buyer: "Ravi M.",    id: "#ORD-9041", price: "₹4,500",  status: "new"       },
@@ -42,19 +43,25 @@ const REVENUE = [
 ];
 
 export default function SellerDashboard({ user }) {
+  const router = useRouter();
+
+  const handlerPush = ()=>{
+    router.push("/sellOrBuy")
+
+  }
   return (
     <div>
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-xl font-medium text-slate-900 flex items-center gap-2">
-            Welcome back, {user.name.split(" ")[0]}
+              Welcome back, {(user.username || "User").split(" ")[0]}
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-800">
               <Store className="w-3 h-3" /> Seller
             </span>
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">Your shop performance & order queue</p>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors">
+        <button onClick={handlerPush}className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-teal-700 text-white text-sm font-medium hover:bg-teal-800 transition-colors">
           <Plus className="w-4 h-4" /> Add listing
         </button>
       </div>
