@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/components/dashboard/StatusPill.jsx", "src/components/dashboard/StatCard.jsx", "src/components/dashboard/Sidebar.jsx", "src/components/dashboard/SellerDashboard.jsx", "src/components/dashboard/BuyerDashboard.jsx", "src/app/productSearch"  ],
   "exclude": ["node_modules"]
 }
