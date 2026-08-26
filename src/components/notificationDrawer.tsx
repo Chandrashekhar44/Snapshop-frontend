@@ -10,6 +10,8 @@ import {
   UserPlus,
 } from "lucide-react";
 import axios from "../lib/axios";
+import { useRouter } from "next/navigation";
+import { useMessageStore } from "@/store/messageStore";
 
 type Notification = {
   id: string;
@@ -17,7 +19,9 @@ type Notification = {
   title: string;
   description: string;
   createdAt: string;
+  userId : number;
   isRead: boolean;
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
   entityId?: string | null;
   entityType?: string | null;
   actionUrl?: string | null;
@@ -26,18 +30,25 @@ type Notification = {
 interface NotificationDrawerProps {
   open: boolean;
   onClose: () => void;
+   onUnreadChange: (value: boolean) => void;
 }
+
 
 export default function NotificationDrawer({
   open,
   onClose,
+  onUnreadChange,
 }: NotificationDrawerProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { setActiveConversationId } = useMessageStore();
+
 
   const unreadCount = notifications.filter(
     (notification) => !notification.isRead
   ).length;
+  
 
   useEffect(() => {
     if (!open) return;
@@ -59,10 +70,18 @@ export default function NotificationDrawer({
           response.data?.data?.notifications;
 
         if (Array.isArray(data)) {
-          setNotifications(data);
-        } else {
-          setNotifications([]);
-        }
+  setNotifications(data);
+
+  onUnreadChange(
+    data.some(
+      (notification) => !notification.isRead
+    )
+  );
+
+} else {
+  setNotifications([]);
+  onUnreadChange(false);
+}
       } catch (error) {
         console.error(
           "Failed to fetch notifications:",
@@ -102,25 +121,26 @@ export default function NotificationDrawer({
     };
   }, [open, onClose]);
 
-  const markAllAsRead = async () => {
-    try {
-      await axios.patch(
-        "http://localhost:4000/api/notifications/read-all"
-      );
+    const markAllAsRead = async () => {
+      try {
+        await axios.patch(
+          "http://localhost:4000/api/notifications/read-all"
+        );
 
-      setNotifications((previous) =>
-        previous.map((notification) => ({
-          ...notification,
-          isRead: true,
-        }))
-      );
-    } catch (error) {
-      console.error(
-        "Failed to mark notifications as read:",
-        error
-      );
-    }
-  };
+        setNotifications((previous) =>
+          previous.map((notification) => ({
+            ...notification,
+            isRead:true
+          }))
+        );
+        onUnreadChange(false);
+      } catch (error) {
+        console.error(
+          "Failed to mark notifications as read:",
+          error
+        );
+      }
+    };
 
   const markAsRead = async (id: string) => {
     try {
@@ -128,16 +148,24 @@ export default function NotificationDrawer({
         `http://localhost:4000/api/notifications/${id}/read`
       );
 
-      setNotifications((previous) =>
-        previous.map((notification) =>
-          notification.id === id
-            ? {
-                ...notification,
-                isRead: true,
-              }
-            : notification
-        )
-      );
+      setNotifications((previous) => {
+  const updated = previous.map((notification) =>
+    notification.id === id
+      ? {
+          ...notification,
+          isRead: true,
+        }
+      : notification
+  );
+
+  onUnreadChange(
+    updated.some(
+      (notification) => !notification.isRead
+    )
+  );
+
+  return updated;
+});
     } catch (error) {
       console.error(
         "Failed to mark notification as read:",
@@ -145,35 +173,67 @@ export default function NotificationDrawer({
       );
     }
   };
-
-  const handleAcceptRequest = async (id: string) => {
+const handleAcceptRequest = async (
+  id: string,
+  buyerId: string,
+  sellerId: number
+) => {
   try {
-    await axios.patch(
+
+    const response = await axios.patch(
       `http://localhost:4000/api/notifications/${id}/accept`
     );
+
 
     setNotifications((previous) =>
       previous.map((notification) =>
         notification.id === id
           ? {
               ...notification,
+              status: response.data.notification.status,
               isRead: true,
             }
           : notification
       )
     );
-  } catch (error) {
+
+
+    const res = await axios.get(
+      `http://localhost:4000/api/messages/conversations/find?buyerId=${buyerId}&sellerId=${sellerId}`,
+      {
+        withCredentials: true
+      }
+    );
+
+
+    if(res.data){
+
+      setActiveConversationId(
+        res.data.id
+      );
+
+      router.push("/inbox");
+
+    }
+
+
+    return true;
+
+  } catch(error){
+
     console.error(
       "Failed to accept request:",
       error
     );
+
+    return false;
   }
 };
 
 const handleDeclineRequest = async (id: string) => {
   try {
-    await axios.patch(
-      `http://localhost:4000 /api/notifications/${id}/decline`
+    const response = await axios.patch(
+      `http://localhost:4000/api/notifications/${id}/decline`
     );
 
     setNotifications((previous) =>
@@ -181,19 +241,19 @@ const handleDeclineRequest = async (id: string) => {
         notification.id === id
           ? {
               ...notification,
+              status: response.data.notification.status,
               isRead: true,
             }
           : notification
       )
     );
+
+    return true;
   } catch (error) {
-    console.error(
-      "Failed to decline request:",
-      error
-    );
+    console.error("Failed to decline request:", error);
+    return false;
   }
 };
-
   return (
     <>
       <div
@@ -300,9 +360,11 @@ function NotificationItem({
 }: {
   notification: Notification;
   onRead: (id: string) => void;
-  onAccept: (id: string) => void;
-  onDecline: (id: string) => void;
+  onAccept: (id: string,buyerId :string,sellerId:number) => Promise<boolean | undefined>;
+  onDecline: (id: string) => Promise<boolean | undefined>;
 }) {
+
+ 
   const isRequest = notification.type === "REQUEST";
 
   const getIcon = () => {
@@ -368,29 +430,43 @@ function NotificationItem({
         </p>
 
 
-        {isRequest && (
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAccept(notification.id);
-              }}
-              className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
-            >
-              Accept
-            </button>
+       {isRequest && notification.status === "PENDING" && (
+  <div className="mt-3 flex gap-2">
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onAccept(notification.id,notification.entityId!,notification.userId)
+      }}
+      className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+    >
+      Accept
+    </button>
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDecline(notification.id);
-              }}
-              className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
-            >
-              Decline
-            </button>
-          </div>
-        )}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onDecline(notification.id)
+      }}
+      className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+    >
+      Decline
+    </button>
+  </div>
+)}
+
+
+{isRequest && notification.status === "ACCEPTED" && (
+  <div className="mt-3 rounded-md bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
+    Request Accepted
+  </div>
+)}
+
+
+{isRequest && notification.status === "DECLINED" && (
+  <div className="mt-3 rounded-md bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
+    Request Declined
+  </div>
+)}
       </div>
 
       {!notification.isRead && (
