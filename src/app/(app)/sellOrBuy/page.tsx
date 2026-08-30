@@ -1,10 +1,14 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormEvent } from "react";
-import axios from "axios";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 export default function sellAndBuyForm(){
 
-     const [mode, setMode] = useState<"buy" | "sell">("buy");
+     const [mode, setMode] = useState<"BUYER" | "SELLER">("BUYER");
       const [email, setEmail] = useState("");
       const [search, setSearch] = useState("");
       const [productName, setProductName] = useState("");
@@ -12,36 +16,124 @@ export default function sellAndBuyForm(){
       const [category, setCategory] = useState("");
       const [submitted, setSubmitted] = useState(false);
       const [loading,setLoading] = useState(false);
+      const [images, setImages] = useState<File[]>([]);
+      const [Error,setError] = useState("");
+      const [uploading, setUploading] = useState(false);
+      const [creatingProduct, setCreatingProduct] = useState(false);
+      const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+      const router = useRouter();
+      const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [enabled, setEnabled] = useState(false);
 
-     const BASE_URL = "http://localhost:5000/api";
+  const handleToggle = () => {
+    const newValue = !enabled;
+    setEnabled(newValue);
+
+    if (newValue) {
+      router.push("/searchBar");
+    } else {
+      router.back();
+    }
+  }
+
+       
+const userMode = async()=>{
+
+const currUser = await axios.get("http://localhost:5001/api/auth/me",{
+    withCredentials:true
+  })
+ 
+
+  setMode(currUser.data.data.role);
+
+   
+  
+
+}
+useEffect(()=>{
+  userMode();
+   
+},[])
+
+
+
+const photoupload = async () => {
+  try {
+    setUploading(true);
+    console.log("clicked upload button")
+
+    const formData = new FormData();
+
+    for (let i = 0; i < images.length; i++) {
+      formData.append("images", images[i]);
+    }
+
+    const res = await axios.post(
+      "http://localhost:5002/api/products/uploadImage",
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("final",res.data);
+    setUploadedImages(res.data.imageUrls);
+
+  } catch(error) {
+    console.log(error);
+  } finally {
+    setUploading(false);
+  }
+};
+
 
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault();
-
-  setLoading(true);
+  
 
   try {
-    const data =
-      mode === "buy"
-        ? { search, category, minPrice :0, maxPrice : 0, condition :'', email }
-        : { productName, category, price, condition :'', description :'', email };
 
-    const endpoint = mode === "buy" ? "/buy" : "/sell";
+    if (mode === "BUYER") {
 
-    const res = await axios.post(`${BASE_URL}${endpoint}`, data);
+      console.log("Buyer searching:", search);
 
-    console.log(res.data);
-    setSubmitted(true);
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      alert(error.response?.data?.message || "Error");
+      router.push(`/productSearch?search=${search}`);
+
     } else {
-      alert("Unexpected error");
+
+      console.log("Seller adding product");
+
+       setCreatingProduct(true);
+
+
+      const data = {
+        productName,
+        price,
+        category,
+        images:uploadedImages
+        
+      };
+
+      await axios.post(
+        "http://localhost:4000/api/products/sell/adding-product",
+        data,
+        {
+          withCredentials: true
+        }
+      );
+
+      console.log("Product added successfully");
     }
-  } finally {
-    setLoading(false);
+
+  } catch(error) {
+    console.log(error);
+  }finally{
+    setCreatingProduct(false);
+    setSubmitted(true);
   }
 };
+
+
 
 
 const inputBase =
@@ -52,74 +144,31 @@ const inputBase =
   ];  
   
   
-
-const handleClick = async () => {
-  try {
-    const response = await axios.post(
-      "http://localhost:5001/api/auth/login",
-      {
-        email: "test@gmail.com",
-        password: "123456",
-      }
-    );
-
-    console.log(response.data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-
-
-
-
-    return (<section id="features" style={{ padding: "96px 24px", background: "#F4F7FF" }}>
-        <div className="max-w-[860px] mx-auto">
+    return (<section id="features" style={{ padding: "60px 24px", background: "#F4F7FF" }}>
+      <div className="max-w-full mx-auto flex justify-end px-6">
+  <div className="flex items-center space-x-2">
+    <Switch id="airplane-mode"  checked={enabled}
+        onCheckedChange={handleToggle} />
+    <Label htmlFor="airplane-mode">Request Product</Label>
+  </div>
+</div>
+        <div className="max-w-[860px] mx-auto relative">
+           
           <div className="text-center mb-12">
+
+              
             <h2
               className="font-black text-[#050F2C] m-0"
               style={{ fontSize: 44, letterSpacing: "-0.03em" }}
             >
-              What do you want to do?
+              {mode === "BUYER" ?"Shop  in  Snap" : "Sell in Snap"}
             </h2>
             <p className="mt-[10px] text-[17px] text-[#6B7A99]">
-              Choose your path — SnapShop handles the rest.
+              {mode === "BUYER" ?"Start searching - SnapShop handles rest" : "Sell in Snap"}
             </p>
           </div>
 
-          <div className="flex justify-center mb-10">
-            <div
-              className="inline-flex gap-1"
-              style={{
-                padding: 6,
-                borderRadius: 20,
-                background: "#fff",
-                boxShadow: "0 2px 16px rgba(0,87,255,0.1)",
-              }}
-            >
-              {(["buy", "sell"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => { setMode(m); setSubmitted(false); }}
-                  className="border-none cursor-pointer font-extrabold transition-all duration-200"
-                  style={{
-                    padding: "11px 40px",
-                    borderRadius: 14,
-                    fontSize: 15,
-                    background: mode === m ? (m === "buy" ? "#003B8E" : "#FF3D6B") : "transparent",
-                    color: mode === m ? "#fff" : "#6B7A99",
-                    boxShadow:
-                      mode === m
-                        ? `0 4px 18px ${m === "buy" ? "rgba(0,87,255,0.35)" : "rgba(255,61,107,0.35)"}`
-                        : "none",
-                    transform: mode === m ? "scale(1.04)" : "scale(1)",
-                  }}
-                >
-                  {m === "buy" ? "🛍️ Buy" : "💰 Sell"}
-                </button>
-              ))}
-            </div>
-          </div>
+          
 
           <div
             className="bg-white overflow-hidden"
@@ -133,14 +182,14 @@ const handleClick = async () => {
               style={{
                 height: 5,
                 background:
-                  mode === "buy"
+                  mode === "BUYER"
                     ? "linear-gradient(90deg,#003B8E,#003B8E)"
                     : "linear-gradient(90deg,#FF3D6B,#003B8E)",
               }}
             />
             <div style={{ padding: "40px 48px" }}>
 
-              {mode === "buy" ? (
+              {mode === "BUYER" ? (
                 <>
                   <div className="flex items-center gap-[14px] mb-7">
                     <div
@@ -150,16 +199,18 @@ const handleClick = async () => {
                       🛍️
                     </div>
                     <div>
-                      <div className="text-[22px] font-black text-[#050F2C]">Find your next deal</div>
+                      <div className="text-[22px] font-black text-[#050F2C]">Find your deal</div>
                       <div className="text-[13px] text-[#6B7A99] mt-[2px]">
                         Millions of items. Unbeatable prices.
                       </div>
                     </div>
                   </div>
-
                   <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
+                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
+                          {Error}
+                        </label>
                         <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
                           Search Products
                         </label>
@@ -240,20 +291,17 @@ const handleClick = async () => {
 
                     <button
                       type="submit"
-                      className="w-full font-black text-base border-none cursor-pointer text-white transition-transform"
+                      className="w-full bg-black font-black text-base border-none cursor-pointer text-white transition-transform"
                       style={{
                         padding: 16,
                         borderRadius: 16,
-                        background: "#0057FF",
                         boxShadow: "0 6px 24px rgba(0,87,255,0.35)",
                       }}
                       onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                      onClick={()=>{
-                        
-                      }}
+                      
                     >
-                      {submitted ? "✅ We'll notify you!" : "🔍 Search Deals"}
+                      {submitted ? " We'll notify you!" : " Search Deals"}
                     </button>
                   </form>
                 </>
@@ -368,6 +416,51 @@ const handleClick = async () => {
                         onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
                       />
                     </div>
+                    <input
+  ref={fileInputRef}
+  type="file"
+  multiple
+  accept="image/*"
+  className="hidden"
+  onChange={(e) => {
+    if (e.target.files) {
+      setImages(Array.from(e.target.files));
+    }
+  }}
+/>
+ <button
+  type="button"
+  onClick={() => fileInputRef.current?.click()}
+  disabled={uploading}
+  className="group relative flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-[1.02] disabled:opacity-70"
+  style={{
+    background: "linear-gradient(135deg,#0057FF,#7C3AED)",
+    boxShadow: "0 8px 25px rgba(0,87,255,0.35)",
+  }}
+>
+  {uploading ? (
+    <>
+      <span className="animate-spin">⏳</span>
+      Uploading...
+    </>
+  ) : (
+    <>
+      📸 Select Images
+    </>
+  )}
+</button>
+{images.length > 0 && (
+  <p className="mt-2 text-sm text-gray-600">
+    {images.length} images selected
+  </p>
+)}
+<button
+  type="button"
+  onClick={photoupload}
+  className="mt-3 w-full py-3 rounded-xl bg-green-600 text-white font-bold"
+>
+  Upload Product
+</button>
 
                     <button
                       type="submit"
@@ -381,7 +474,16 @@ const handleClick = async () => {
                       onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     >
-                      {submitted ? "Listing Created!" : "List My Item — Free"}
+                      {creatingProduct ? (
+  <>
+    <span className="animate-spin">⏳</span>
+    Creating Listing...
+  </>
+) : submitted ? (
+  "Listing Created!"
+) : (
+  "List my Item"
+)}
                     </button>
                   </form>
                 </>
