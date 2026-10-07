@@ -43,6 +43,7 @@ export default function NotificationDrawer({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { setActiveConversationId } = useMessageStore();
+  
 
 
   const unreadCount = notifications.filter(
@@ -58,7 +59,7 @@ export default function NotificationDrawer({
         setLoading(true);
 
         const response = await axios.get(
-          "http://localhost:4000/api/notifications"
+          "/api/notifications"
         );
 
         console.log(
@@ -124,7 +125,7 @@ export default function NotificationDrawer({
     const markAllAsRead = async () => {
       try {
         await axios.patch(
-          "http://localhost:4000/api/notifications/read-all"
+          "/api/notifications/read-all"
         );
 
         setNotifications((previous) =>
@@ -145,7 +146,7 @@ export default function NotificationDrawer({
   const markAsRead = async (id: string) => {
     try {
       await axios.patch(
-        `http://localhost:4000/api/notifications/${id}/read`
+        `/api/notifications/${id}/read`
       );
 
       setNotifications((previous) => {
@@ -174,20 +175,20 @@ export default function NotificationDrawer({
     }
   };
 const handleAcceptRequest = async (
-  id: string,
-  buyerId: string,
-  sellerId: number
+  notificationId: string
 ) => {
   try {
-
     const response = await axios.patch(
-      `http://localhost:4000/api/notifications/${id}/accept`
+      `/api/notifications/${notificationId}/accepts`,
+      {},
+      {
+        withCredentials: true,
+      }
     );
-
 
     setNotifications((previous) =>
       previous.map((notification) =>
-        notification.id === id
+        notification.id === notificationId
           ? {
               ...notification,
               status: response.data.notification.status,
@@ -197,43 +198,37 @@ const handleAcceptRequest = async (
       )
     );
 
+    const conversationBuyerId = response.data.buyerUserId;
+    const conversationSellerId = response.data.sellerUserId;
+
+    console.log("Conversation IDs:", {
+      buyerId: conversationBuyerId,
+      sellerId: conversationSellerId,
+    });
 
     const res = await axios.get(
-      `http://localhost:4000/api/messages/conversations/find?buyerId=${buyerId}&sellerId=${sellerId}`,
+      `/api/messages/conversations/find?buyerId=${conversationBuyerId}&sellerId=${conversationSellerId}`,
       {
-        withCredentials: true
+        withCredentials: true,
       }
     );
 
-
-    if(res.data){
-
-      setActiveConversationId(
-        res.data.id
-      );
-
+    if (res.data) {
+      setActiveConversationId(res.data.id);
       router.push("/inbox");
-
     }
-
 
     return true;
 
-  } catch(error){
-
-    console.error(
-      "Failed to accept request:",
-      error
-    );
-
+  } catch (error) {
+    console.error("Failed to accept request:", error);
     return false;
   }
 };
-
 const handleDeclineRequest = async (id: string) => {
   try {
     const response = await axios.patch(
-      `http://localhost:4000/api/notifications/${id}/decline`
+      `/api/notifications/${id}/decline`
     );
 
     setNotifications((previous) =>
@@ -366,6 +361,8 @@ function NotificationItem({
 
  
   const isRequest = notification.type === "REQUEST";
+  const [acceptError, setAcceptError] = useState("");
+const [accepted, setAccepted] = useState(false);
 
   const getIcon = () => {
     switch (notification.type) {
@@ -431,28 +428,63 @@ function NotificationItem({
 
 
        {isRequest && notification.status === "PENDING" && (
-  <div className="mt-3 flex gap-2">
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onAccept(notification.id,notification.entityId!,notification.userId)
-      }}
-      className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
-    >
-      Accept
-    </button>
+<div className="mt-3 flex gap-2">
 
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onDecline(notification.id)
-      }}
-      className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
-    >
-      Decline
-    </button>
-  </div>
+  <button
+    onClick={async (e) => {
+      e.stopPropagation();
+
+      try {
+        setAcceptError("");
+
+        onAccept(notification.id,notification.entityId!,notification.userId)
+
+
+        setAccepted(true);
+
+      } catch (error: any) {
+
+        if (
+          error.response?.data?.message === 
+          "Request already accepted"
+        ) {
+          setAcceptError(
+            "Order has already been accepted by another seller"
+          );
+        } else {
+          setAcceptError(
+            "Failed to accept request"
+          );
+        }
+
+      }
+    }}
+    className="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+  >
+    Accept
+  </button>
+
+
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      onDecline(notification.id);
+    }}
+    className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700"
+  >
+    Decline
+  </button>
+
+</div>
+       )}
+
+
+{acceptError && (
+  <p className="mt-2 text-xs text-red-500">
+    {acceptError}
+  </p>
 )}
+
 
 
 {isRequest && notification.status === "ACCEPTED" && (

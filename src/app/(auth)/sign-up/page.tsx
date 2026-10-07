@@ -92,7 +92,7 @@ const onSubmit = async (data: z.infer<typeof signupSchema>) => {
 }
 
     const result =await axios.post(
-  "http://localhost:4000/api/auth/register",
+  "https://snapshopo.onrender.com/api/auth/register",
   {
     ...data,
     latitude: location.latitude,

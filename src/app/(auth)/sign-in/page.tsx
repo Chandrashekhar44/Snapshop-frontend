@@ -23,6 +23,7 @@ type ResendVerificationResponse = {
 export default function SignInForm() {
     const router = useRouter()
       const { user, setUser } = useAuthStore();
+      const [errorMessage, setErrorMessage] = useState("");
     const [isSubmitting,setisSubmitting] = useState(false);
 
     const form = useForm<z.infer<typeof signInSchema>>({
@@ -34,59 +35,49 @@ export default function SignInForm() {
     })
 
        const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-
   try {
-
     setisSubmitting(true);
+    setErrorMessage("");
 
     const response = await axios.post(
-      "http://localhost:4000/api/auth/login",
+      "https://snapshopo.onrender.com/api/auth/login",
       {
-        identifier:
-          data.identifier,
-        password:
-          data.password,
+        identifier: data.identifier,
+        password: data.password,
       },
       {
         withCredentials: true,
       }
     );
 
-    alert('User logged in successfully')
-    console.log(response.data.data.id);
+    localStorage.setItem(
+      "userId",
+      String(response.data.data.id)
+    );
 
-localStorage.setItem(
-  "userId",
-  String(response.data.data.id)
-);
     connectSocket();
     setUser(response.data.data);
-    setUser(response.data.data);
 
-console.log(
-  "Zustand after login:",
-  useAuthStore.getState().user
-);
-
-    router.replace(
-      "/dashboard"
-    );
+    router.replace("/dashboard");
 
   } catch (error: any) {
 
-  console.log(error);
+    if (error.response?.status === 429) {
+      setErrorMessage(
+        "Too many login attempts. Please wait a few minutes and try again."
+      );
+    } 
+    else if (error.response?.data?.message) {
+      setErrorMessage(error.response.data.message);
+    } 
+    else {
+      setErrorMessage(
+        "Something went wrong. Please try again."
+      );
+    }
 
-  
-
-  alert(
-    error ||
-    "Error while logging in"
-  );
-
-} finally {
-
+  } finally {
     setisSubmitting(false);
-
   }
 };
 
@@ -126,6 +117,22 @@ console.log(
                             </FormItem>
                         )}
                     />
+
+                    {errorMessage && (
+  <div className="
+    rounded-md
+    bg-red-50
+    border
+    border-red-200
+    px-4
+    py-3
+    text-sm
+    text-red-600
+    text-center
+  ">
+    {errorMessage}
+  </div>
+)}
                     <Button className='w-full' type="submit" disabled={isSubmitting}
                     >{isSubmitting ? (
                                     <>

@@ -110,7 +110,7 @@ export default function ChatPanel({ thread, onSend, onAcceptOrder }: ChatPanelPr
       )}
 
       <div className="flex flex-1 flex-col overflow-y-auto bg-sky-50/40 px-4 py-4">
-        {thread.messages.length === 0 || thread == null  ? (
+        {!thread || thread.messages.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="max-w-sm rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-100">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">

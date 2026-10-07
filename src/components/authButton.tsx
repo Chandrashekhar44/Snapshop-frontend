@@ -13,7 +13,7 @@ export default function AuthButton() {
   const token = localStorage.getItem("token");
 
   await axios.post(
-    "http://localhost:5001/api/auth/logout",
+    "/api/auth/logout",
     {},
     {
       headers: {

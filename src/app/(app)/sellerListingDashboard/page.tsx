@@ -112,7 +112,7 @@ export default function SellerListingsDashboard() {
       setLoading(true);
 
       const res = await axios.get(
-        "http://localhost:4000/api/products/seedListings"
+        "/api/products/seedListings"
       );
 
       console.log("Listings:", res.data);

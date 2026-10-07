@@ -57,6 +57,7 @@ const formatPrice = (cents: number) =>
 
 export default function ProductSearch() {
   const [query, setQuery] = useState("");
+  const[category,setCategory] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [sortMode, setSortMode] = useState<SortMode>("none");
  const [products, setProducts] = useState<Product[]>([]);
@@ -71,16 +72,17 @@ useEffect(() => {
   const fetchProducts = async () => {
     try {
 
-      const response = await axios.post(
-        "http://localhost:5002/api/products/buy/product-search",
-        {
-          search,
-          category:"",
-          minPrice:0,
-          maxPrice:0,
-          condition:""
-        },
-        {
+      console.log("clciked")
+
+      const response = await axios.get(
+        "/api/products/buy/product-search",
+        {params:{
+      query: search,
+      category:"",
+      minPrice:0,
+      maxPrice:10000,
+      condition:""
+    },
           withCredentials:true
         }
       );
@@ -139,6 +141,13 @@ useEffect(() => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search products..."
+            className="w-full bg-[#101c3f] border border-white/10 rounded-lg pl-9 pr-9 py-2.5 text-sm placeholder-white/40 outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition"
+          />
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             placeholder="Search products..."
             className="w-full bg-[#101c3f] border border-white/10 rounded-lg pl-9 pr-9 py-2.5 text-sm placeholder-white/40 outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition"
           />

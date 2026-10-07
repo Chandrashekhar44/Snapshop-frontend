@@ -51,7 +51,7 @@ export default function Sidebar({
         setError("");
 
         const res = await fetch(
-          `http://localhost:4000/api/messages/search?search=${encodeURIComponent(search)}`,
+          `https://snapshopo.onrender.com/api/messages/search?search=${encodeURIComponent(search)}`,
           { signal: controller.signal ,
             credentials:"include"
           }
@@ -98,7 +98,7 @@ export default function Sidebar({
       }
 
            const sellerId = localStorage.getItem("userId");
-           const findRes = await fetch(`http://localhost:4000/api/messages/conversations/find?buyerId=${user.id}&sellerId=${sellerId}`,
+           const findRes = await fetch(`https://snapshopo.onrender.com/api/messages/conversations/find?buyerId=${user.id}&sellerId=${sellerId}`,
      {
        credentials: "include",
      }
@@ -109,7 +109,7 @@ export default function Sidebar({
 
       const conversation = await findRes.json();
       const msgRes = await fetch(
-              `http://localhost:4000/api/messages/conversation/${conversation.id}/messages`,
+              `https://snapshopo.onrender.com/api/messages/conversation/${conversation.id}/messages`,
   {
     credentials: "include",
   }

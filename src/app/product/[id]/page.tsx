@@ -40,7 +40,7 @@ const [orderPlaced, setOrderPlaced] = useState(false);
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/products/product/${id}`,
+          `/api/products/product/${id}`,
           {
             withCredentials: true,
           }
@@ -82,7 +82,7 @@ const [orderPlaced, setOrderPlaced] = useState(false);
     try {
        setPlacingOrder(true);
       const res = await axios.post(
-        "http://localhost:5002/api/products/place-order",
+        "/api/products/place-order",
         {
   productId: product.id,
   quantity: 1,

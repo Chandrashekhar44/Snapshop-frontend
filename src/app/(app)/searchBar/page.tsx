@@ -1,6 +1,8 @@
 "use client"
+import { getToken } from "firebase/messaging";
 import axios from "../../../lib/axios";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { getFirebaseMessaging } from "@/firebase/firebase";
 type Product = {
   id: number;
   name: string;
@@ -51,6 +53,23 @@ export type SmokeHandle = { trigger: (origin: { x: number; y: number }, cb: Smok
 const COVER_MS = 750;
 const HOLD_MS = 120;
 const DISSOLVE_MS = 950;
+const CATEGORIES = [
+  "All Categories",
+  "Electronics",
+  "Fashion",
+  "Home & Kitchen",
+  "Beauty & Personal Care",
+  "Sports & Fitness",
+  "Books",
+  "Toys & Games",
+  "Jewellery",
+  "Automotive",
+  "Grocery",
+  "Mobiles",
+  "Computers",
+  "Furniture",
+  "Collectibles",
+];
 
 const SmokeCanvas = forwardRef<SmokeHandle>((_props, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -204,33 +223,68 @@ export default function LandingSearchPreview() {
   }
 
   const [query, setQuery] = useState("");
+  const [category,setCategory] = useState("All Categories");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState<"relevance" | "distance" | "price-asc" | "price-desc">("relevance");
-  const [history, setHistory] = useState<string[]>([]); // in-memory only — no localStorage in artifacts
+  const [history, setHistory] = useState<string[]>([]); 
 
   const [rawResults, setRawResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   async function performSearch(term: string) {
-    if (!term.trim()) {
-      setRawResults([]);
-      setHasSearched(false);
-      return;
-    }
-    setLoading(true);
-    const data = await  axios.get("http://localhost:4000/api/products/request-order",{
-      params:{
-        query:term
-
-      },
-      withCredentials:true
-    })
-    setRawResults(data.data);
-    setHasSearched(true);
-    setLoading(false);
+  if (!term.trim()) {
+    setRawResults([]);
+    setHasSearched(false);
+    return;
   }
+
+  try {
+    setLoading(true);
+
+    const response = await axios.get(
+      "/api/products/request-order",
+      {
+        params: {
+          query: term,
+          category: category,
+        },
+        withCredentials: true,
+      }
+    );
+
+
+ console.log("SEARCH RESPONSE:", response.data);
+
+const products = Array.isArray(response.data)
+  ? response.data
+  : response.data.results || [];
+
+console.log("P", products);
+
+setRawResults(products);
+    console.log("rawresults",rawResults)
+    setHasSearched(true);
+
+
+  } catch (error) {
+
+    console.error(
+      "SEARCH ERROR:",
+      error
+    );
+
+    setRawResults([]);
+    setHasSearched(true);
+
+
+  } finally {
+
+    setLoading(false);
+
+  }
+}
 
  
 
@@ -248,44 +302,126 @@ export default function LandingSearchPreview() {
     });
   }
 
-  const searchHandler = async()=>{
-    console.log("button clicked")
+  const searchHandler = async () => {
 
-    const res = await axios.get("http://localhost:4000/api/products/request-order",{
-      params:{
-        query:query
+  try {
 
-      },
-      withCredentials:true
-    })
-    
+    console.log("button clicked");
 
-    console.log(res.data.name)
-    setRawResults(res.data);
+
+    const res = await axios.get(
+      "/api/products/request-order",
+      {
+        params:{
+          query,
+          category
+        },
+        withCredentials:true
+      }
+    );
+
+
+    console.log(
+      "SEARCH RESULT:",
+      res.data
+    );
+
+
+    const products = Array.isArray(res.data)
+      ? res.data
+      : res.data.products ||
+        res.data.data ||
+        [];
+
+
+    setRawResults(products);
+    setHasSearched(true);
+
+
+  } catch(error){
+
+    console.error(
+      "Search failed:",
+      error
+    );
+
+    setRawResults([]);
 
   }
 
+};
   const categories = useMemo(
     () => Array.from(new Set(rawResults.map((p) => p.category))).sort(),
     [rawResults]
   );
 
   const results = useMemo(() => {
-    let list = rawResults;
-    if (selectedCategories.size > 0) {
-      list = list.filter((p) => selectedCategories.has(p.category));
-    }
-    const sorted = [...list];
-    if (sortBy === "price-asc") sorted.sort((a, b) => a.price - b.price);
-    if (sortBy === "price-desc") sorted.sort((a, b) => b.price - a.price);
-    if (sortBy === "distance") {
-      sorted.sort((a, b) => (a.distance_meters ?? Infinity) - (b.distance_meters ?? Infinity));
-    }
-    if (sortBy === "relevance") {
-      sorted.sort((a, b) => (b.relevance ?? 0) - (a.relevance ?? 0));
-    }
-    return sorted;
-  }, [rawResults, selectedCategories, sortBy]);
+
+  let list: Product[] = Array.isArray(rawResults)
+    ? rawResults
+    : [];
+
+
+  if(selectedCategories.size > 0){
+
+    list = list.filter(
+      (p)=>selectedCategories.has(p.category)
+    );
+
+  }
+
+
+  const sorted = [...list];
+
+
+  if(sortBy === "price-asc"){
+
+    sorted.sort(
+      (a,b)=>a.price-b.price
+    );
+
+  }
+
+
+  if(sortBy === "price-desc"){
+
+    sorted.sort(
+      (a,b)=>b.price-a.price
+    );
+
+  }
+
+
+  if(sortBy === "distance"){
+
+    sorted.sort(
+      (a,b)=>
+        (a.distance_meters ?? Infinity) -
+        (b.distance_meters ?? Infinity)
+    );
+
+  }
+
+
+  if(sortBy === "relevance"){
+
+    sorted.sort(
+      (a,b)=>
+        (b.relevance ?? 0) -
+        (a.relevance ?? 0)
+    );
+
+  }
+
+
+  return sorted;
+
+
+},[
+  rawResults,
+  selectedCategories,
+  sortBy
+]);
 
   function clearSearch() {
     setQuery("");
@@ -306,176 +442,459 @@ export default function LandingSearchPreview() {
 
   const showBrowsePrompt = !hasSearched && !loading;
 
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-white">
-      {view === "landing" && (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6">
-          <h1 className="text-4xl font-semibold text-slate-900 tracking-tight mb-3">Welcome</h1>
-          <p className="text-slate-500 mb-10 text-center max-w-sm">Everything you need, one search away.</p>
-          <button
-            ref={searchBtnRef}
-            onClick={() => goTo("search", searchBtnRef.current)}
-            className="flex items-center gap-2 rounded-full bg-slate-800 px-6 py-3 text-white font-medium hover:bg-slate-900 active:scale-95 transition-all"
+
+
+
+
+
+ return (
+  <div className="relative min-h-screen overflow-hidden bg-white">
+
+    {view === "landing" && (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6">
+
+        <h1 className="text-4xl font-semibold text-slate-900 tracking-tight mb-3">
+          Welcome
+        </h1>
+
+        <p className="text-slate-500 mb-10 text-center max-w-sm">
+          Everything you need, one search away.
+        </p>
+
+
+        <button
+          ref={searchBtnRef}
+          onClick={() => goTo("search", searchBtnRef.current)}
+          className="
+            flex items-center gap-2
+            rounded-full
+            bg-slate-800
+            px-6
+            py-3
+            text-white
+            font-medium
+            hover:bg-slate-900
+            active:scale-95
+            transition-all
+          "
+        >
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0a7 7 0 10-9.9-9.9 7 7 0 009.9 9.9z" />
-            </svg>
-            Search
-          </button>
-        </div>
-      )}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-4.35-4.35m0 0a7 7 0 10-9.9-9.9 7 7 0 009.9 9.9z"
+            />
+          </svg>
 
-      {view === "search" && (
-        <div className="min-h-screen text-slate-900 px-6 py-30">
-          <button
-            ref={backBtnRef}
-            onClick={() => goTo("landing", backBtnRef.current)}
-            className="absolute top-6 left-6 flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm text-white font-medium hover:bg-slate-800 active:scale-95 transition-all"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back
-          </button>
+          Search
 
-         <div className="max-w-lvh mx-auto flex gap-2">
-  <div className="relative flex-1 min-w-0">
-    <input
-      type="text"
-      value={query}
-      onChange={(e) => {
-        setQuery(e.target.value);
-        setIsOpen(true);
-      }}
-      onFocus={() => setIsOpen(true)}
-      onKeyDown={handleKeyDown}
-      placeholder="Start typing..."
-      autoFocus
-      className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 pr-9 text-base placeholder-slate-400 outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-300 transition-colors"
-    />
-    {query && (
-      <button
-        onClick={clearSearch}
-        aria-label="Clear search"
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-      >
-        &#10005;
-      </button>
-    )}
+        </button>
 
-    {isOpen && !query.trim() && (history.length > 0 || TRENDING.length > 0) && (
-      <div className="absolute z-10 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-lg p-4 space-y-4">
-        {history.length > 0 && (
-          <div>
-            <p className="text-xs tracking-widest text-slate-400 uppercase mb-2">Recent</p>
-            <div className="flex flex-wrap gap-2">
-              {history.map((term) => (
-                <button
-                  key={term}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => runSearch(term)}
-                  className="text-xs px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
-                >
-                  {term}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        <div>
-          <p className="text-xs tracking-widest text-slate-400 uppercase mb-2">Trending</p>
-          <div className="flex flex-wrap gap-2">
-            {TRENDING.map((term) => (
-              <button
-                key={term}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => runSearch(term)}
-                className="text-xs px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200"
-              >
-                {term}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     )}
-  </div>
 
-  <button
-    onClick={() => query.trim() && runSearch(query) }
-    disabled={!query.trim()}
-    className="shrink-0 rounded-lg bg-slate-800 px-5 py-3 text-white font-medium hover:bg-slate-900 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100"
-  >
-    Search
-  </button>
-</div>
 
-          {showBrowsePrompt ? (
-            <p className="text-center text-slate-400 text-sm mt-16">Search for a product to start browsing.</p>
-          ) : (
-            <div className="w-full max-w-4xl mx-auto mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {loading &&
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="rounded-lg border border-slate-200 bg-white p-4 animate-pulse">
-                    <div className="h-32 rounded bg-slate-100 mb-3" />
-                    <div className="h-3 w-16 bg-slate-100 rounded mb-2" />
-                    <div className="h-4 w-3/4 bg-slate-100 rounded mb-2" />
-                    <div className="h-3 w-12 bg-slate-100 rounded" />
+
+    {view === "search" && (
+
+      <div className="min-h-screen text-slate-900 px-6 py-30">
+
+
+        <button
+          ref={backBtnRef}
+          onClick={() => goTo("landing", backBtnRef.current)}
+          className="
+            absolute
+            top-6
+            left-6
+            flex
+            items-center
+            gap-2
+            rounded-full
+            bg-slate-900
+            px-4
+            py-2
+            text-sm
+            text-white
+            font-medium
+            hover:bg-slate-800
+            active:scale-95
+            transition-all
+          "
+        >
+
+          ← Back
+
+        </button>
+
+
+
+        <div className="max-w-5xl mx-auto flex gap-3">
+
+
+
+          <div className="relative flex-1">
+
+            <input
+              type="text"
+              value={query}
+              onChange={(e)=>{
+                setQuery(e.target.value);
+                setIsOpen(true);
+              }}
+              onFocus={()=>setIsOpen(true)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search products..."
+              autoFocus
+              className="
+                w-full
+                rounded-lg
+                border
+                border-slate-300
+                bg-white
+                px-4
+                py-3
+                pr-10
+                outline-none
+                focus:border-slate-500
+                focus:ring-1
+                focus:ring-slate-300
+              "
+            />
+
+
+            {query && (
+
+              <button
+                onClick={clearSearch}
+                className="
+                  absolute
+                  right-3
+                  top-1/2
+                  -translate-y-1/2
+                  text-slate-400
+                "
+              >
+                ✕
+              </button>
+
+            )}
+
+
+
+            {isOpen && !query.trim() &&
+            (history.length > 0 || TRENDING.length > 0) && (
+
+              <div
+                className="
+                  absolute
+                  z-20
+                  mt-2
+                  w-full
+                  rounded-lg
+                  border
+                  bg-white
+                  shadow-lg
+                  p-4
+                "
+              >
+
+
+                {history.length > 0 && (
+
+                  <div>
+
+                    <p className="text-xs text-slate-400 uppercase mb-2">
+                      Recent
+                    </p>
+
+
+                    <div className="flex flex-wrap gap-2">
+
+                      {history.map(term=>(
+
+                        <button
+                          key={term}
+                          onMouseDown={(e)=>e.preventDefault()}
+                          onClick={()=>runSearch(term)}
+                          className="
+                            px-3
+                            py-1.5
+                            rounded-full
+                            text-xs
+                            bg-slate-100
+                          "
+                        >
+                          {term}
+                        </button>
+
+                      ))}
+
+                    </div>
+
                   </div>
-                ))}
+
+                )}
+
+
+
+                <div className="mt-4">
+
+                  <p className="text-xs text-slate-400 uppercase mb-2">
+                    Trending
+                  </p>
+
+
+                  <div className="flex flex-wrap gap-2">
+
+                    {TRENDING.map(term=>(
+
+                      <button
+                        key={term}
+                        onMouseDown={(e)=>e.preventDefault()}
+                        onClick={()=>runSearch(term)}
+                        className="
+                          px-3
+                          py-1.5
+                          rounded-full
+                          text-xs
+                          bg-slate-100
+                        "
+                      >
+                        {term}
+                      </button>
+
+                    ))}
+
+                  </div>
+
+
+                </div>
+
+
+              </div>
+
+            )}
+
+
+          </div>
+
+
+
+
+
+
+          <div className="relative w-56">
+
+            <select
+              value={category}
+              onChange={(e)=>setCategory(e.target.value)}
+              className="
+                w-full
+                rounded-lg
+                border
+                border-slate-300
+                bg-white
+                px-4
+                py-3
+                outline-none
+              "
+            >
+
+              {CATEGORIES.map(item=>(
+
+                <option key={item}>
+                  {item}
+                </option>
+
+              ))}
+
+            </select>
+
+
+          </div>
+
+
+
+
+
+          {/* SEARCH BUTTON */}
+
+          <button
+            onClick={()=>query.trim() && runSearch(query)}
+            disabled={!query.trim()}
+            className="
+              rounded-lg
+              bg-slate-800
+              px-6
+              text-white
+              font-medium
+              disabled:opacity-40
+            "
+          >
+
+            Search
+
+          </button>
+
+
+
+        </div>
+
+
+
+
+
+        {showBrowsePrompt ? (
+
+          <p className="text-center text-slate-400 text-sm mt-16">
+            Search for a product to start browsing.
+          </p>
+
+
+        ) : (
+
+
+          <div
+            className="
+              w-full
+              max-w-4xl
+              mx-auto
+              mt-6
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              lg:grid-cols-3
+              gap-4
+            "
+          >
+
+
+            {loading && Array.from({length:6}).map((_,i)=>(
+
+              <div
+                key={i}
+                className="
+                  rounded-lg
+                  border
+                  p-4
+                  animate-pulse
+                "
+              >
+
+                <div className="h-32 bg-slate-100 rounded mb-3"/>
+
+                <div className="h-4 bg-slate-100 rounded"/>
+
+              </div>
+
+            ))}
+
+
+
+
+
+            {!loading && results.map((p)=>(
+
+              <div
+                key={p.id}
+                className="
+                  rounded-lg
+                  border
+                  p-4
+                  hover:border-slate-400
+                "
+              >
+
+
+                <div className="h-40 bg-slate-100 rounded mb-3 overflow-hidden">
+
+                  {p.images && (
+
+                    <img
+                      src={p.images}
+                      alt={p.name}
+                      className="
+                        w-full
+                        h-full
+                        object-cover
+                      "
+                    />
+
+                  )}
+
+                </div>
+
+
+
+                <p className="text-xs text-slate-400 uppercase">
+                  {p.category}
+                </p>
+
+
+                <h3 className="font-medium mt-1">
+                  {highlight(p.name,query)}
+                </h3>
+
+
+
+                <div className="flex justify-between mt-2 text-sm">
+
+                  <span>
+                    ${p.price}
+                  </span>
+
+
+                  {formatDistance(p.distance_meters) && (
+
+                    <span className="text-slate-400">
+                      {formatDistance(p.distance_meters)}
+                    </span>
+
+                  )}
+
+                </div>
+
+
+              </div>
+
+            ))}
+
+
 
             {!loading &&
-  results.map((p) => (
-    <div
-      key={p.id}
-      className="rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-400 transition-colors"
-    >
-      <div className="max-h-fit rounded bg-slate-100 mb-3 overflow-hidden flex items-center justify-center">
-        {p.images ? (
-          <img
-            src={p.images}
-            alt={p.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-slate-300 text-2xl font-semibold">
-            {p.category?.[0] ?? "P"}
-          </span>
+             hasSearched &&
+             results.length===0 && (
+
+              <p className="col-span-full text-center text-slate-400">
+                No products matched. Try another term.
+              </p>
+
+            )}
+
+
+          </div>
+
+
         )}
+
+
       </div>
 
-      <span className="text-xs tracking-widest text-slate-400 uppercase">
-        {p.category ?? "P"}
-      </span>
+    )}
 
-      <h3 className="mt-1 font-medium text-slate-900">
-        {highlight(p.name, query)}
-      </h3>
 
-      <div className="mt-2 flex items-center justify-between text-sm">
-        <span className="text-slate-700">
-          ${p.price}
-        </span>
+    <SmokeCanvas ref={smokeRef}/>
 
-        {formatDistance(p.distance_meters) && (
-          <span className="text-slate-400 text-xs">
-            {formatDistance(p.distance_meters)}
-          </span>
-        )}
-      </div>
-    </div>
-  ))
-}
 
-              {!loading && hasSearched && results.length === 0 && (
-                <p className="text-slate-400 text-sm col-span-full text-center">No products matched. Try another term.</p>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      <SmokeCanvas ref={smokeRef} />
-    </div>
-  );
+  </div>
+);
 }

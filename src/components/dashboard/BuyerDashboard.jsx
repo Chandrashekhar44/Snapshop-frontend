@@ -1,6 +1,7 @@
 import { Package, CheckCircle, Clock, XCircle, ShoppingBag } from "lucide-react";
 import StatCard from "./StatCard";
 import StatusPill from "./StatusPill";
+import { useRouter } from "next/navigation";
 
 const RECENT_ORDERS = [
   { flag: "🇬🇧", name: "GB 1840 Penny Black replica set",         seller: "PhilatelicHouse", id: "#ORD-8821", price: "₹3,200",  status: "delivered" },
@@ -25,14 +26,7 @@ const ACTIVITY = [
   { color: "bg-green-600",  text: "Japan Olympics sheet delivered successfully",  time: "May 17, 11:00 AM"   },
 ];
 
-const COLLECTION = [
-  { emoji: "🌍", count: "34",    label: "Countries"     },
-  { emoji: "📮", count: "218",   label: "Total stamps"  },
-  { emoji: "⭐", count: "12",    label: "Rare"           },
-  { emoji: "📦", count: "5",     label: "Sets complete" },
-  { emoji: "🏷️", count: "₹1.2L", label: "Est. value"   },
-  { emoji: "📅", count: "1840",  label: "Oldest"        },
-];
+
 
 const SPENDING = [
   { label: "Classic / Vintage",  amount: "₹42,000", pct: 75, color: "bg-blue-500"   },
@@ -42,20 +36,33 @@ const SPENDING = [
 ];
 
 export default function BuyerDashboard({ user }) {
+  const router = useRouter();
+
+  const browseHandle = async()=>{
+     router.push("/sellOrBuy")
+  }
+
+  const searchHandle = ()=>{
+    router.push("/searchBar")
+
+  }
   return (
     <div>
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-xl font-medium text-slate-900 flex items-center gap-2">
-            Welcome back, {user.name.split(" ")[0]}
+              Welcome back, {(user.username || "User").split(" ")[0]}
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
               <ShoppingBag className="w-3 h-3" /> Buyer
             </span>
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">Your collection & order summary</p>
         </div>
-        <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors">
-          <ShoppingBag className="w-4 h-4" /> Browse stamps
+        <button onClick={searchHandle}className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors">
+          <ShoppingBag className="w-4 h-4" /> Browse Products
+        </button>
+        <button onClick={browseHandle}className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors">
+          <ShoppingBag className="w-4 h-4" /> Browse Products
         </button>
       </div>
 

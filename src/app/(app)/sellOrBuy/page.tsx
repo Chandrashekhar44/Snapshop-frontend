@@ -39,7 +39,7 @@ export default function sellAndBuyForm(){
        
 const userMode = async()=>{
 
-const currUser = await axios.get("http://localhost:5001/api/auth/me",{
+const currUser = await axios.get("/api/auth/me",{
     withCredentials:true
   })
  
@@ -69,7 +69,7 @@ const photoupload = async () => {
     }
 
     const res = await axios.post(
-      "http://localhost:5002/api/products/uploadImage",
+      "/api/products/uploadImage",
       formData,
       {
         withCredentials: true,
@@ -115,7 +115,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
       };
 
       await axios.post(
-        "http://localhost:4000/api/products/sell/adding-product",
+        "/api/products/sell/adding-product",
         data,
         {
           withCredentials: true
