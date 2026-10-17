@@ -164,6 +164,7 @@ const fetchSellerDashboardStats = async () => {
     console.log(response.data)
 
     setStats(response.data);
+    setPendingStats(response.data.activeOrders)
 
   } catch (error) {
     console.error("Failed to fetch seller dashboard stats:", error);
@@ -184,7 +185,6 @@ const fulfillOrders = async()=>{
       withCredentials:true,
     })
     console.log("mnop",response.data)
-    setPendingStats(response.data);
 
   }catch (error) {
     console.log(error);
