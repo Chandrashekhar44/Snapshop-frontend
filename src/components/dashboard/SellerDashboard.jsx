@@ -381,7 +381,7 @@ useEffect(()=>{
         </p>
 
         <p className="text-[11px] text-slate-500">
-          Buyer: {o.Buyer.User.username}
+          Buyer: {o.Buyer.User.username ?? "Unknown Buyer"}
         </p>
 
         <p className="text-[11px] text-slate-400">
