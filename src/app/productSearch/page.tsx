@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import axios from "../../lib/axios";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export type Product = {
@@ -55,7 +55,7 @@ const formatPrice = (cents: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 
 
-export default function ProductSearch() {
+  function ProductSearchContent() {
   const [query, setQuery] = useState("");
   const[category,setCategory] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -344,5 +344,20 @@ useEffect(() => {
            {filtered.length} {filtered.length === 1 ? "product" : "products"}
      </div>
     </div>
+  );
+}
+
+
+export default function ProductSearch() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black p-5 text-white">
+          Loading products...
+        </div>
+      }
+    >
+      <ProductSearchContent />
+    </Suspense>
   );
 }
