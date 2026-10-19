@@ -51,32 +51,30 @@ type User = {
   username: string;
   email: string;
   role:string;
+  profileImage:string
 };
+
 
 useEffect(() => {
   const fetchUser = async () => {
     try {
       const res = await axios.get("/api/auth/me");
+      const userData = res.data.data;
 
-      console.log("res:", res);
-      console.log("res.data:", res.data);
-      console.log("res.data.data:", res.data.data);
+      setUser(userData);
+      console.log("usss",userData)
 
-      setUser(res.data.data);
+      setAvatar(userData.imageUrl ?? null);
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch user:", error);
     }
   };
 
   fetchUser();
 }, []);
+
   
-  const previewAvatar = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
   
-      setAvatar(URL.createObjectURL(file));
-    };
 
   const open = (id: PanelKeys) => setActive(id);
   const close = () => setActive(null);
@@ -145,101 +143,175 @@ useEffect(() => {
   }
 };
 
-  return (
-    <div className="min-h-screen bg-[#060e18] text-white font-sans">
-      <div className="max-w-sm mx-auto px-4 pt-12 pb-24">
-        
-        <div className="flex flex-col items-center text-center mb-10">
-          <div className="relative group cursor-pointer mb-4">
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#1e4080] via-[#2563eb] to-purple-600 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-opacity" />
-             <div className="relative mb-4">
+    
+const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
+const previewAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    alert("Please select a JPG, PNG, or WebP image.");
+    e.target.value = "";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Image size must be less than 5 MB.");
+    e.target.value = "";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    setUploadingAvatar(true);
+
+    const res = await axios.post("/api/products/uploadProfileImage", formData);
+
+    setAvatar(res.data.imageUrl);
+  } catch (error) {
+    console.error("Avatar upload failed:", error);
+    alert("Failed to upload profile picture. Please try again.");
+  } finally {
+    setUploadingAvatar(false);
+    e.target.value = "";
+  }
+};
+
+
+  
+return (
+  <div className="min-h-screen bg-[#060e18] text-white font-sans">
+    <div className="max-w-sm mx-auto px-4 pt-12 pb-24">
+      <div className="flex flex-col items-center text-center mb-10">
+        <div className="relative group mb-4">
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#1e4080] via-[#2563eb] to-purple-600 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-opacity" />
+
+          <div className="relative">
             <div className="w-28 h-28 rounded-full border-4 border-blue-500 overflow-hidden bg-slate-800 flex items-center justify-center text-3xl text-blue-500">
               {avatar ? (
                 <img
                   src={avatar}
                   className="w-full h-full object-cover"
-                  alt="avatar"
+                  alt="Profile picture"
                 />
               ) : (
-                (
-  user?.username
-    ?.trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map(word => word[0])
-    .join("")
-    .toUpperCase())
-
+                user?.username
+                  ?.trim()
+                  .split(/\s+/)
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((word) => word[0])
+                  .join("")
+                  .toUpperCase() || "?"
               )}
             </div>
 
-            <label className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center cursor-pointer">
-              <Camera size={14} />
+            <label
+              className={`absolute bottom-1 right-1 w-8 h-8 rounded-full bg-blue-500 border-2 border-slate-900 flex items-center justify-center ${
+                uploadingAvatar
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer hover:bg-blue-600"
+              } transition-colors`}
+              title="Change profile picture"
+            >
+              {uploadingAvatar ? (
+                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Camera size={14} />
+              )}
+
               <input
                 hidden
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={previewAvatar}
+                disabled={uploadingAvatar}
               />
             </label>
           </div>
-          </div>
-          <h2 className="text-xl font-bold tracking-tight text-white">{user?.username}</h2>
-          <p className="text-xs text-gray-500 mt-1 font-mono bg-[#0d1b2e] border border-[#1e3a5f] px-2.5 py-0.5 rounded-full">
-            {user?.email}
-          </p>
+
+          {uploadingAvatar && (
+            <p className="text-xs text-blue-400 mt-3">
+              Uploading profile picture...
+            </p>
+          )}
         </div>
 
-        <Section title="Account">
-          <Row label="Personal info" sub="Name, email, phone" id="personalInfo" />
-          <Row label="Address book" sub="3 saved addresses" id="addressBook" />
-          <Row label="Payment methods" sub="2 cards on file" id="paymentMethods" />
-        </Section>
+        <h2 className="text-xl font-bold tracking-tight text-white">
+          {user?.username}
+        </h2>
 
-        <Section title="Shop">
-          <Row label="Shop details" sub="Name, bio, logo" id="shopDetails" />
-          <Row label="Product catalogue" sub="128 active listings" id="productCatalogue" />
-          <Row label="Order management" sub="12 awaiting action" id="orderManagement" />
-          <Row label="Shop URL" sub="snap.shop/sarahnielsen" id="shopURL" />
-          <Row label="Social links" sub="Instagram · TikTok" id="socialLinks" />
-        </Section>
-
-        <Section title="Notifications">
-          <Row label="Push notifications" sub="Order updates, promotions" id="notifications" />
-          <Row label="Order alerts" sub="New orders & shipping" id="notifications" />
-        </Section>
-
-        <Section title="Security">
-          <Row label="Change password" sub="Last changed 3 months ago" id="changePassword" />
-          <Row label="Two-factor auth" sub="Extra login security" id="twoFactor" />
-        </Section>
-
-        <Section title="Danger zone">
-          <button
-            onClick={() => open("deleteAccount")}
-            className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-red-950/20 transition-colors text-left group"
-          >
-            <div>
-              <p className="text-sm font-medium text-red-400">Delete account</p>
-              <p className="text-xs text-red-900 mt-0.5">This cannot be undone</p>
-            </div>
-            <span className="text-red-800 group-hover:translate-x-0.5 transition-transform"><ChevronRight /></span>
-          </button>
-        </Section>
-
-        <Section title="Logout">
-          <button onClick={logoutHandler} className="w-full  text-sm text-gray-500 hover:text-gray-300 transition-colors  py-2">
-          Sign out
-        </button>
-        </Section>
+        <p className="text-xs text-gray-500 mt-1 font-mono bg-[#0d1b2e] border border-[#1e3a5f] px-2.5 py-0.5 rounded-full">
+          {user?.email}
+        </p>
       </div>
 
-      {Object.entries(panels).map(([id, { title, content }]) => (
-        <Drawer key={id} title={title} open={active === id} onClose={close}>
-          {content}
-        </Drawer>
-      ))}
+      <Section title="Account">
+        <Row label="Personal info" sub="Name, email, phone" id="personalInfo" />
+        <Row label="Address book" sub="3 saved addresses" id="addressBook" />
+        <Row label="Payment methods" sub="2 cards on file" id="paymentMethods" />
+      </Section>
+
+      <Section title="Shop">
+        <Row label="Shop details" sub="Name, bio, logo" id="shopDetails" />
+        <Row label="Product catalogue" sub="128 active listings" id="productCatalogue" />
+        <Row label="Order management" sub="12 awaiting action" id="orderManagement" />
+        <Row label="Shop URL" sub="snap.shop/sarahnielsen" id="shopURL" />
+        <Row label="Social links" sub="Instagram · TikTok" id="socialLinks" />
+      </Section>
+
+      <Section title="Notifications">
+        <Row label="Push notifications" sub="Order updates, promotions" id="notifications" />
+        <Row label="Order alerts" sub="New orders & shipping" id="notifications" />
+      </Section>
+
+      <Section title="Security">
+        <Row label="Change password" sub="Last changed 3 months ago" id="changePassword" />
+        <Row label="Two-factor auth" sub="Extra login security" id="twoFactor" />
+      </Section>
+
+      <Section title="Danger zone">
+        <button
+          onClick={() => open("deleteAccount")}
+          className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-red-950/20 transition-colors text-left group"
+        >
+          <div>
+            <p className="text-sm font-medium text-red-400">Delete account</p>
+            <p className="text-xs text-red-900 mt-0.5">
+              This cannot be undone
+            </p>
+          </div>
+          <span className="text-red-800 group-hover:translate-x-0.5 transition-transform">
+            <ChevronRight />
+          </span>
+        </button>
+      </Section>
+
+      <Section title="Logout">
+        <button
+          onClick={logoutHandler}
+          className="w-full text-sm text-gray-500 hover:text-gray-300 transition-colors py-2"
+        >
+          Sign out
+        </button>
+      </Section>
     </div>
-  );
+
+    {Object.entries(panels).map(([id, { title, content }]) => (
+      <Drawer
+        key={id}
+        title={title}
+        open={active === id}
+        onClose={close}
+      >
+        {content}
+      </Drawer>
+    ))}
+  </div>
+);
+
 }

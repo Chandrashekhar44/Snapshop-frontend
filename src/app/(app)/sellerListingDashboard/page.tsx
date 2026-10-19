@@ -10,7 +10,7 @@ import {
   ImageOff,
 } from "lucide-react";
 import axios from "../../../lib/axios";
-
+import { useRouter } from "next/navigation";
 const FONT_IMPORT_STYLE = `
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -106,6 +106,7 @@ export default function SellerListingsDashboard() {
   const [query, setQuery] = useState("");
   const [seedListing, setSeedListing] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const seedListings = async () => {
     try {
@@ -129,6 +130,11 @@ export default function SellerListingsDashboard() {
   useEffect(() => {
     seedListings();
   }, []);
+
+  const routeSellOrBuy = ()=>{
+        router.push("/sellOrBuy");
+    
+  }
 
  
   const listings = useMemo(() => {
@@ -273,7 +279,7 @@ export default function SellerListingsDashboard() {
 
           <button
             className="flex items-center justify-center gap-1.5 bg-[#0A0A0A] text-[#F4F3F0] px-4 py-2.5 text-xs font-mono tracking-wide hover:bg-[#0A0A0A]/85 transition-colors w-full sm:w-auto"
-          >
+          onClick={routeSellOrBuy}>
             <Plus
               className="size-3.5"
               strokeWidth={2}
