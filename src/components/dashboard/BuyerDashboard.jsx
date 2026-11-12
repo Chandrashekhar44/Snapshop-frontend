@@ -47,76 +47,101 @@ export default function BuyerDashboard({ user }) {
 
   }
   return (
-    <div>
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <h1 className="text-xl font-medium text-slate-900 flex items-center gap-2">
-              Welcome back, {(user.username || "User").split(" ")[0]}
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
-              <ShoppingBag className="w-3 h-3" /> Buyer
-            </span>
-          </h1>
-          <p className="text-sm text-slate-500 mt-0.5">Your collection & order summary</p>
+  <div className="mx-auto w-full max-w-6xl">
+    <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+      <div>
+        <h1 className="flex flex-wrap items-center gap-2.5 text-2xl font-bold tracking-tight text-slate-900">
+          Welcome back, {(user.username || "User").split(" ")[0]}
+          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800 ring-1 ring-inset ring-blue-100">
+            <ShoppingBag className="h-3 w-3" /> Buyer
+          </span>
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">Your collection &amp; order summary</p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2.5">
+        <button
+          onClick={searchHandle}
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition hover:border-blue-200 hover:bg-blue-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-700/20"
+        >
+          <span aria-hidden="true">🔍</span> Search products
+        </button>
+        <button
+          onClick={browseHandle}
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-700/25 transition hover:bg-blue-800 active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-700/30"
+        >
+          <ShoppingBag className="h-4 w-4" /> Browse products
+        </button>
+      </div>
+    </div>
+
+    <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+      <StatCard label="Total orders"         value="48" delta="6 this month"      deltaType="up"      icon={Package}     color="blue"  />
+      <StatCard label="Delivered"            value="39" delta="81% success rate"  deltaType="up"      icon={CheckCircle} color="green" />
+      <StatCard label="Pending / in transit" value="6"  delta="4 ship this week"  deltaType="neutral" icon={Clock}       color="amber" />
+      <StatCard label="Cancelled"            value="3"  delta="1 refund pending"  deltaType="down"    icon={XCircle}     color="red"   />
+    </div>
+
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-base font-semibold text-slate-900">Recent orders</p>
+          <button className="rounded-lg px-2.5 py-1 text-xs font-semibold text-blue-700 transition hover:bg-blue-50">
+            View all
+          </button>
         </div>
-        <button onClick={searchHandle}className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors">
-          <ShoppingBag className="w-4 h-4" /> Browse Products
-        </button>
-        <button onClick={browseHandle}className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors">
-          <ShoppingBag className="w-4 h-4" /> Browse Products
-        </button>
-      </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-5">
-        <StatCard label="Total orders"        value="48" delta="6 this month"        deltaType="up"      icon={Package}      color="blue"  />
-        <StatCard label="Delivered"           value="39" delta="81% success rate"    deltaType="up"      icon={CheckCircle}  color="green" />
-        <StatCard label="Pending / in transit" value="6" delta="4 ship this week"   deltaType="neutral" icon={Clock}        color="amber" />
-        <StatCard label="Cancelled"            value="3" delta="1 refund pending"   deltaType="down"    icon={XCircle}      color="red"   />
-      </div>
-
-      <div className="grid grid-cols-[1.6fr_1fr] gap-3 mb-5">
-
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-slate-900">Recent orders</p>
-            <button className="text-xs text-blue-700 hover:underline">View all</button>
-          </div>
+        <div className="-mx-2">
           {RECENT_ORDERS.map((o) => (
-            <div key={o.id} className="flex items-center gap-3 py-2 border-b border-slate-100 last:border-0">
-              <div className="w-9 h-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-lg flex-shrink-0">
+            <div
+              key={o.id}
+              className="flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-slate-50"
+            >
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-xl">
                 {o.flag}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-900 truncate">{o.name}</p>
-                <p className="text-[11px] text-slate-500">{o.seller} · {o.id}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-slate-900">{o.name}</p>
+                <p className="truncate text-xs text-slate-500">
+                  {o.seller} · {o.id}
+                </p>
               </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-xs font-medium text-slate-900">{o.price}</p>
+              <div className="flex flex-shrink-0 flex-col items-end gap-1">
+                <p className="text-sm font-semibold text-slate-900">{o.price}</p>
                 <StatusPill status={o.status} />
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-slate-900">Wishlist</p>
-            <button className="text-xs text-blue-700 hover:underline">Manage</button>
-          </div>
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-base font-semibold text-slate-900">Wishlist</p>
+          <button className="rounded-lg px-2.5 py-1 text-xs font-semibold text-blue-700 transition hover:bg-blue-50">
+            Manage
+          </button>
+        </div>
+
+        <div className="-mx-2">
           {WISHLIST.map((w) => (
-            <div key={w.name} className="flex items-center gap-3 py-2 border-b border-slate-100 last:border-0">
-              <div className="w-8 h-8 rounded-lg bg-pink-50 border border-pink-100 flex items-center justify-center text-base flex-shrink-0">
+            <div
+              key={w.name}
+              className="flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-slate-50"
+            >
+              <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-pink-100 bg-pink-50 text-xl">
                 {w.flag}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-900 truncate">{w.name}</p>
-                <p className="text-[11px] text-slate-500">{w.note}</p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-slate-900">{w.name}</p>
+                <p className="truncate text-xs text-slate-500">{w.note}</p>
               </div>
-              <p className="text-xs font-medium text-blue-700 flex-shrink-0">{w.price}</p>
+              <p className="flex-shrink-0 text-sm font-semibold text-blue-700">{w.price}</p>
             </div>
           ))}
         </div>
       </div>
-
     </div>
-  );
+  </div>
+);
 }

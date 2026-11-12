@@ -159,130 +159,151 @@ export default function SnapShopLanding() {
 
 
 
-      <section
-        id ="features"
-        className="min-h-screen flex items-center justify-center relative overflow-hidden"
-        style={{ paddingTop: 80 }}
-      >
-        <div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            top: -120, right: -180, width: 620, height: 620,
-            background: "linear-gradient(135deg,#0057FF 0%,#3B82F6 100%)",
-            opacity: 0.08,
-          }}
-        />
-        <div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            bottom: -80, left: -120, width: 400, height: 400,
-            background: "linear-gradient(135deg,#FF3D6B,#FF8FAB)",
-            opacity: 0.07,
-          }}
-        />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            opacity: 0.12,
-            backgroundImage: "radial-gradient(circle, #0057FF 1.2px, transparent 1.2px)",
-            backgroundSize: "36px 36px",
-          }}
-        />
+     <section
+  id="features"
+  className="relative flex min-h-screen items-center overflow-hidden bg-[#F6F8FF] px-4 pb-16 pt-28 sm:px-8"
+>
+  {/* Keyframes live here so nothing else needs to be added to your CSS */}
+  <style>{`
+    @keyframes snapFlash { 0% { opacity: 0 } 20% { opacity: .95 } 100% { opacity: 0 } }
+    @keyframes snapFloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+    .snap-flash { animation: snapFlash .7s ease-out .9s 1 both }
+    .snap-float { animation: snapFloat 6s ease-in-out infinite }
+    .snap-float-late { animation: snapFloat 7s ease-in-out 1.5s infinite }
+    @media (prefers-reduced-motion: reduce) {
+      .snap-flash, .snap-float, .snap-float-late { animation: none }
+    }
+  `}</style>
 
-        <div className="relative max-w-[1200px] mx-auto px-6 flex flex-col items-center text-center">
-          <div
-            className="inline-flex items-center gap-2 rounded-full mb-9"
-            style={{
-              background: "#EEF3FF",
-              border: "1.5px solid #C7D7FF",
-              padding: "6px 16px",
-            }}
+  {/* Background glows */}
+  <div className="pointer-events-none absolute -right-32 top-0 h-[560px] w-[560px] rounded-full bg-[#0057FF]/15 blur-3xl" />
+  <div className="pointer-events-none absolute -left-24 bottom-0 h-[380px] w-[380px] rounded-full bg-[#FF3D6B]/15 blur-3xl" />
+
+  <div className="relative mx-auto grid w-full max-w-6xl items-center gap-14 lg:grid-cols-2 lg:gap-8">
+    {/* Left: copy */}
+    <div className="text-center lg:text-left">
+      {/* Logo lockup */}
+      <div className="mb-8 inline-flex items-center gap-3">
+        <svg width="44" height="44" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect width="40" height="40" rx="12" fill="#003B8E" />
+          <path
+            d="M16 15v-2a4 4 0 0 1 8 0v2"
+            stroke="#fff"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+          <rect x="10" y="15" width="20" height="16" rx="4" fill="#fff" />
+          <circle cx="20" cy="23" r="4.6" fill="#003B8E" />
+          <circle cx="20" cy="23" r="1.9" fill="#FF3D6B" />
+        </svg>
+        <span className="text-[28px] font-extrabold tracking-tight text-[#050F2C]">SnapShop</span>
+      </div>
+
+      <h1 className="text-5xl font-black leading-[1.05] tracking-[-0.035em] text-[#050F2C] sm:text-6xl lg:text-7xl">
+        Buy and sell
+        <br />
+        in a snap.
+      </h1>
+
+      <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-slate-600 lg:mx-0">
+        Take a photo, set your price, and your listing is live. Buyers get notified the moment
+        something matches what they want.
+      </p>
+
+      <div className="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+        <button
+          onClick={() => {
+            router.push("/sellOrBuy");
+          }}
+          className="group inline-flex items-center gap-2.5 rounded-2xl bg-[#003B8E] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#003B8E]/30 transition hover:-translate-y-0.5 hover:bg-[#002f72] active:translate-y-0 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#003B8E]/30"
+        >
+          <span aria-hidden="true">🛍️</span>
+          Buy or sell
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 16 16"
+            fill="none"
+            className="transition-transform group-hover:translate-x-1"
+            aria-hidden="true"
           >
-            <span
-              className="w-2 h-2 rounded-full inline-block"
-              style={{ background: "#0057FF", animation: "ping 1.5s ease-in-out infinite" }}
+            <path
+              d="M3 8h10M9 4l4 4-4 4"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            <span className="text-[12px] font-extrabold text-[#003B8E] tracking-[0.08em] uppercase">
-              Now Live · Buy &amp; Sell Instantly
-            </span>
-          </div>
+          </svg>
+        </button>
+        <p className="text-sm text-slate-500">Free to list. No hidden fees.</p>
+      </div>
+    </div>
 
-          <div className="flex items-center justify-center relative select-none">
-            <div className="relative z-[3]">
-              <h1
-                className="m-0 leading-none tracking-[-0.04em] text-[#050F2C]"
-                style={{
-                  fontSize: "clamp(70px,15vw,175px)",
-                  fontWeight: 900,
-                  fontFamily: "'Georgia',serif",
-                }}
-              >
-                Snap
-                <span className="text-[#003B8E] relative inline-block">
-                  Shop
-                  <svg
-                    className="absolute left-0 w-full"
-                    style={{ bottom: -4 }}
-                    viewBox="0 0 320 14"
-                    fill="none"
-                    preserveAspectRatio="none"
-                  >
-                    <path
-                      d="M4 10 Q80 2 160 10 Q240 18 316 10"
-                      stroke="#000000"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-              </h1>
+    {/* Right: phone with a live listing */}
+    <div className="relative mx-auto w-full max-w-[340px]">
+      {/* Floating: photo added */}
+      <div className="snap-float absolute -left-3 top-24 z-10 flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-lg sm:-left-14">
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FF3D6B]/10 text-base">📸</span>
+        <div className="text-left">
+          <p className="text-xs font-bold text-slate-900">Photo added</p>
+          <p className="text-[11px] text-slate-500">3 of 3 images</p>
+        </div>
+      </div>
+
+      {/* Floating: buyer match */}
+      <div className="snap-float-late absolute -right-3 bottom-20 z-10 flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-lg sm:-right-12">
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-green-50 text-base">🔔</span>
+        <div className="text-left">
+          <p className="text-xs font-bold text-slate-900">New buyer match</p>
+          <p className="text-[11px] text-slate-500">Asking for Air Max</p>
+        </div>
+      </div>
+
+      {/* Phone */}
+      <div className="relative rounded-[2.75rem] bg-[#050F2C] p-2.5 shadow-2xl shadow-[#003B8E]/30">
+        <div className="absolute left-1/2 top-4 z-20 h-5 w-24 -translate-x-1/2 rounded-full bg-[#050F2C]" />
+        <div className="overflow-hidden rounded-[2.25rem] bg-white">
+          <div className="p-4 pt-12">
+            {/* Viewfinder */}
+            <div className="relative flex h-60 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#DCE7FF] to-[#FFE3EA]">
+              <span className="select-none text-8xl drop-shadow-md">👟</span>
+
+              <span className="absolute left-3 top-3 h-6 w-6 rounded-tl-lg border-l-[3px] border-t-[3px] border-[#003B8E]" />
+              <span className="absolute right-3 top-3 h-6 w-6 rounded-tr-lg border-r-[3px] border-t-[3px] border-[#003B8E]" />
+              <span className="absolute bottom-3 left-3 h-6 w-6 rounded-bl-lg border-b-[3px] border-l-[3px] border-[#003B8E]" />
+              <span className="absolute bottom-3 right-3 h-6 w-6 rounded-br-lg border-b-[3px] border-r-[3px] border-[#003B8E]" />
+
+              {/* One-time shutter flash */}
+              <div className="snap-flash pointer-events-none absolute inset-0 bg-white opacity-0" />
+            </div>
+
+            <div className="mt-4 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-base font-bold text-slate-900">Nike Air Max</p>
+                <p className="mt-0.5 text-xs text-slate-500">Size 9, worn twice</p>
+              </div>
+              <p className="text-lg font-black text-[#003B8E]">₹4,500</p>
+            </div>
+
+            <div className="mt-3 flex gap-2">
+              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-800">
+                Like new
+              </span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
+                Footwear
+              </span>
+            </div>
+
+            <div className="mt-4 flex h-11 items-center justify-center rounded-xl bg-[#FF3D6B] text-sm font-bold text-white shadow-lg shadow-[#FF3D6B]/30">
+              List my item
             </div>
           </div>
-
-          <p className="mt-7 text-xl text-[#6B7A99] font-medium max-w-[440px]">
-            The marketplace that moves as fast as you do.{" "}
-            <strong className="text-[#003B8E]">Snap it. List it. Sell it.</strong>
-          </p>
-
-          <div className="mt-9 flex gap-4 flex-wrap justify-center">
-            <button
-              className="rounded-full font-extrabold text-base border-none cursor-pointer text-white transition-transform"
-              style={{
-                padding: "15px 36px",
-                background: "#003B8E",
-                boxShadow: "0 6px 28px rgba(0,87,255,0.35)",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-             onClick={async () => {
-   
-
-      router.push("/sellOrBuy");
-
-             }}
-            >
-              🛍️ Choose here to Buy or Sell
-            </button>
-            
-          </div>
-
-          <div
-            className="mt-12 flex items-center gap-[6px] text-[#6B7A99] text-[13px]"
-            style={{ animation: "floatHand 2.5s ease-in-out infinite" }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M8 3v10M4 9l4 4 4-4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            Scroll to explore
-          </div>
         </div>
-      </section>
+      </div>
+    </div>
+  </div>
+</section>
 
      
 

@@ -144,353 +144,266 @@ const inputBase =
   ];  
   
   
-    return (<section id="features" style={{ padding: "60px 24px", background: "#F4F7FF" }}>
-      <div className="max-w-full mx-auto flex justify-end px-6">
-  <div className="flex items-center space-x-2">
-    <Switch id="airplane-mode"  checked={enabled}
-        onCheckedChange={handleToggle} />
-    <Label htmlFor="airplane-mode">Request Product</Label>
-  </div>
-</div>
-        <div className="max-w-[860px] mx-auto relative">
-           
-          <div className="text-center mb-12">
+    return (
+  <section id="features" className="bg-slate-50 px-4 py-16 sm:px-6 sm:py-20">
+    <div className="mx-auto max-w-5xl">
+      <div className="mb-6 flex justify-end">
+        <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">
+          <Label htmlFor="airplane-mode" className="cursor-pointer text-sm font-medium text-slate-700">
+            Request Product
+          </Label>
+          <Switch id="airplane-mode" checked={enabled} onCheckedChange={handleToggle} />
+        </div>
+      </div>
 
-              
-            <h2
-              className="font-black text-[#050F2C] m-0"
-              style={{ fontSize: 44, letterSpacing: "-0.03em" }}
-            >
-              {mode === "BUYER" ?"Shop  in  Snap" : "Sell in Snap"}
+      <div className="grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5 md:grid-cols-5">
+        <div
+          className={
+            "flex flex-col justify-between p-8 text-white sm:p-10 md:col-span-2 " +
+            (mode === "BUYER" ? "bg-[#003B8E]" : "bg-[#0B1B3F]")
+          }
+        >
+          <div>
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-3xl">
+              {mode === "BUYER" ? "🛍️" : "💰"}
+            </div>
+            <h2 className="text-4xl font-black leading-tight tracking-tight sm:text-5xl">
+              {mode === "BUYER" ? "Shop in Snap" : "Sell in Snap"}
             </h2>
-            <p className="mt-[10px] text-[17px] text-[#6B7A99]">
-              {mode === "BUYER" ?"Start searching - SnapShop handles rest" : "Sell in Snap"}
+            <p className="mt-4 max-w-xs text-base leading-relaxed text-white/75">
+              {mode === "BUYER"
+                ? "Start searching. SnapShop handles the rest."
+                : "Turn your clutter into cash. Zero fees to list."}
             </p>
           </div>
 
-          
-
-          <div
-            className="bg-white overflow-hidden"
-            style={{
-              borderRadius: 28,
-              boxShadow: "0 20px 60px rgba(0,87,255,0.1)",
-              border: "1.5px solid #003B8E",
-            }}
-          >
-            <div
-              style={{
-                height: 5,
-                background:
-                  mode === "BUYER"
-                    ? "linear-gradient(90deg,#003B8E,#003B8E)"
-                    : "linear-gradient(90deg,#FF3D6B,#003B8E)",
-              }}
-            />
-            <div style={{ padding: "40px 48px" }}>
-
-              {mode === "BUYER" ? (
-                <>
-                  <div className="flex items-center gap-[14px] mb-7">
-                    <div
-                      className="flex items-center justify-center text-[26px]"
-                      style={{ width: 52, height: 52, borderRadius: 16, background: "#EEF3FF" }}
-                    >
-                      🛍️
-                    </div>
-                    <div>
-                      <div className="text-[22px] font-black text-[#050F2C]">Find your deal</div>
-                      <div className="text-[13px] text-[#6B7A99] mt-[2px]">
-                        Millions of items. Unbeatable prices.
-                      </div>
-                    </div>
-                  </div>
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          {Error}
-                        </label>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Search Products
-                        </label>
-                        <input
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                          placeholder="e.g. iPhone 14, Nike Air Max…"
-                          className={inputBase}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#0057FF")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Category
-                        </label>
-                        <select
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value)}
-                          className={inputBase + " appearance-none"}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#0057FF")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        >
-                          <option value="">All Categories</option>
-                          {categories.map((c) => <option key={c}>{c}</option>)}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                      {[["Min Price (₹)", "0"], ["Max Price (₹)", "99,999"]].map(([lbl, ph]) => (
-                        <div key={lbl}>
-                          <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                            {lbl}
-                          </label>
-                          <input
-                            type="number"
-                            placeholder={ph}
-                            className={inputBase}
-                            style={{ border: "2px solid #E4EAFF" }}
-                            onFocus={(e) => (e.currentTarget.style.borderColor = "#0057FF")}
-                            onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                          />
-                        </div>
-                      ))}
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Condition
-                        </label>
-                        <select
-                          className={inputBase + " appearance-none"}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#0057FF")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        >
-                          {["Any","New","Like New","Good","Fair"].map((o) => <option key={o}>{o}</option>)}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                        Your Email
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        className={inputBase}
-                        style={{ border: "2px solid #E4EAFF" }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = "#0057FF")}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-black font-black text-base border-none cursor-pointer text-white transition-transform"
-                      style={{
-                        padding: 16,
-                        borderRadius: 16,
-                        boxShadow: "0 6px 24px rgba(0,87,255,0.35)",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                      
-                    >
-                      {submitted ? " We'll notify you!" : " Search Deals"}
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-[14px] mb-7">
-                    <div
-                      className="flex items-center justify-center text-[26px]"
-                      style={{ width: 52, height: 52, borderRadius: 16, background: "#FFF0F3" }}
-                    >
-                      💰
-                    </div>
-                    <div>
-                      <div className="text-[22px] font-black text-[#050F2C]">List &amp; earn instantly</div>
-                      <div className="text-[13px] text-[#6B7A99] mt-[2px]">
-                        Turn your clutter into cash. Zero fees to list.
-                      </div>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Product Name
-                        </label>
-                        <input
-                          value={productName}
-                          onChange={(e) => setProductName(e.target.value)}
-                          placeholder="What are you selling?"
-                          className={inputBase}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#FF3D6B")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Category
-                        </label>
-                        <select
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value)}
-                          className={inputBase + " appearance-none"}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#FF3D6B")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        >
-                          <option value="">Select category</option>
-                          {categories.map((c) => <option key={c}>{c}</option>)}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Your Price (₹)
-                        </label>
-                        <input
-                          type="number"
-                          value={price}
-                          onChange={(e) => setPrice(e.target.value)}
-                          placeholder="Set your price"
-                          className={inputBase}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#FF3D6B")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                          Condition
-                        </label>
-                        <select
-                          className={inputBase + " appearance-none"}
-                          style={{ border: "2px solid #E4EAFF" }}
-                          onFocus={(e) => (e.currentTarget.style.borderColor = "#FF3D6B")}
-                          onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                        >
-                          {["New","Like New","Good","Fair"].map((o) => <option key={o}>{o}</option>)}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                        Description
-                      </label>
-                      <textarea
-                        placeholder="Describe your item — condition, specs, why you're selling…"
-                        rows={3}
-                        className={inputBase + " resize-none"}
-                        style={{ border: "2px solid #E4EAFF" }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = "#FF3D6B")}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[12px] font-bold text-[#6B7A99] mb-[6px] uppercase tracking-[0.05em]">
-                        Your Email
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        className={inputBase}
-                        style={{ border: "2px solid #E4EAFF" }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = "#FF3D6B")}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = "#E4EAFF")}
-                      />
-                    </div>
-                    <input
-  ref={fileInputRef}
-  type="file"
-  multiple
-  accept="image/*"
-  className="hidden"
-  onChange={(e) => {
-    if (e.target.files) {
-      setImages(Array.from(e.target.files));
-    }
-  }}
-/>
- <button
-  type="button"
-  onClick={() => fileInputRef.current?.click()}
-  disabled={uploading}
-  className="group relative flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-[1.02] disabled:opacity-70"
-  style={{
-    background: "linear-gradient(135deg,#0057FF,#7C3AED)",
-    boxShadow: "0 8px 25px rgba(0,87,255,0.35)",
-  }}
->
-  {uploading ? (
-    <>
-      <span className="animate-spin">⏳</span>
-      Uploading...
-    </>
-  ) : (
-    <>
-      📸 Select Images
-    </>
-  )}
-</button>
-{images.length > 0 && (
-  <p className="mt-2 text-sm text-gray-600">
-    {images.length} images selected
-  </p>
-)}
-<button
-  type="button"
-  onClick={photoupload}
-  className="mt-3 w-full py-3 rounded-xl bg-green-600 text-white font-bold"
->
-  Upload Product
-</button>
-
-                    <button
-                      type="submit"
-                      className="w-full font-black text-base border-none cursor-pointer text-white transition-transform"
-                      style={{
-                        padding: 16,
-                        borderRadius: 16,
-                        background: "#FF3D6B",
-                        boxShadow: "0 6px 24px rgba(255,61,107,0.35)",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                    >
-                      {creatingProduct ? (
-  <>
-    <span className="animate-spin">⏳</span>
-    Creating Listing...
-  </>
-) : submitted ? (
-  "Listing Created!"
-) : (
-  "List my Item"
-)}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
-          </div>
+          <ul className="mt-10 space-y-3 text-sm text-white/90">
+            {(mode === "BUYER"
+              ? [
+                  "Tell us what you want and your budget",
+                  "We match you with sellers",
+                  "Get notified by email",
+                ]
+              : [
+                  "List in under a minute",
+                  "Add photos to sell faster",
+                  "Buyers reach you by email",
+                ]
+            ).map((t) => (
+              <li key={t} className="flex items-start gap-3">
+                <span
+                  className={
+                    "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold " +
+                    (mode === "BUYER" ? "bg-white text-[#003B8E]" : "bg-[#FF3D6B] text-white")
+                  }
+                >
+                  ✓
+                </span>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </section>)
+
+        <div className="p-6 sm:p-10 md:col-span-3">
+          {mode === "BUYER" ? (
+            <>
+              <h3 className="text-2xl font-extrabold text-slate-900">Find your deal</h3>
+              <p className="mt-1 text-sm text-slate-500">Millions of items. Unbeatable prices.</p>
+
+              <form
+                onSubmit={handleSubmit}
+                className="mt-7 flex flex-col gap-5 [&_input]:h-12 [&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-slate-50 [&_input]:px-4 [&_input]:text-sm [&_input]:text-slate-900 [&_input]:outline-none [&_input]:transition [&_input:focus]:border-[#003B8E] [&_input:focus]:bg-white [&_input:focus]:ring-4 [&_input:focus]:ring-[#003B8E]/10 [&_select]:h-12 [&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-slate-50 [&_select]:px-4 [&_select]:text-sm [&_select]:text-slate-900 [&_select]:outline-none [&_select]:transition [&_select:focus]:border-[#003B8E] [&_select:focus]:bg-white [&_select:focus]:ring-4 [&_select:focus]:ring-[#003B8E]/10"
+              >
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Search products</label>
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="e.g. iPhone 14, Nike Air Max…"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">Category</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                      <option value="">All categories</option>
+                      {categories.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">Condition</label>
+                    <select>
+                      {["Any", "New", "Like New", "Good", "Fair"].map((o) => (
+                        <option key={o}>{o}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">Min price (₹)</label>
+                    <input type="number" placeholder="0" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">Max price (₹)</label>
+                    <input type="number" placeholder="99,999" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Your email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="mt-1 h-12 w-full rounded-xl bg-[#003B8E] text-base font-bold text-white shadow-lg shadow-[#003B8E]/25 transition hover:bg-[#002f72] active:scale-[0.99] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#003B8E]/30"
+                >
+                  {submitted ? "We'll notify you!" : "Search deals"}
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <h3 className="text-2xl font-extrabold text-slate-900">List &amp; earn instantly</h3>
+              <p className="mt-1 text-sm text-slate-500">Turn your clutter into cash. Zero fees to list.</p>
+
+              <form
+                onSubmit={handleSubmit}
+                className="mt-7 flex flex-col gap-5 [&_input]:h-12 [&_input]:w-full [&_input]:rounded-xl [&_input]:border [&_input]:border-slate-200 [&_input]:bg-slate-50 [&_input]:px-4 [&_input]:text-sm [&_input]:text-slate-900 [&_input]:outline-none [&_input]:transition [&_input:focus]:border-[#FF3D6B] [&_input:focus]:bg-white [&_input:focus]:ring-4 [&_input:focus]:ring-[#FF3D6B]/15 [&_select]:h-12 [&_select]:w-full [&_select]:rounded-xl [&_select]:border [&_select]:border-slate-200 [&_select]:bg-slate-50 [&_select]:px-4 [&_select]:text-sm [&_select]:text-slate-900 [&_select]:outline-none [&_select]:transition [&_select:focus]:border-[#FF3D6B] [&_select:focus]:bg-white [&_select:focus]:ring-4 [&_select:focus]:ring-[#FF3D6B]/15 [&_textarea]:w-full [&_textarea]:resize-none [&_textarea]:rounded-xl [&_textarea]:border [&_textarea]:border-slate-200 [&_textarea]:bg-slate-50 [&_textarea]:px-4 [&_textarea]:py-3 [&_textarea]:text-sm [&_textarea]:text-slate-900 [&_textarea]:outline-none [&_textarea]:transition [&_textarea:focus]:border-[#FF3D6B] [&_textarea:focus]:bg-white [&_textarea:focus]:ring-4 [&_textarea:focus]:ring-[#FF3D6B]/15"
+              >
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Product name</label>
+                  <input
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                    placeholder="What are you selling?"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">Category</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                      <option value="">Select category</option>
+                      {categories.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-600">Condition</label>
+                    <select>
+                      {["New", "Like New", "Good", "Fair"].map((o) => (
+                        <option key={o}>{o}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Your price (₹)</label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="Set your price"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Description</label>
+                  <textarea
+                    placeholder="Describe your item: condition, specs, why you're selling…"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Your email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-xs font-semibold text-slate-600">Photos</label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        setImages(Array.from(e.target.files));
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-sm text-slate-600 transition hover:border-[#FF3D6B] hover:bg-[#FF3D6B]/5 disabled:opacity-60"
+                  >
+                    <span className="text-2xl">{uploading ? "⏳" : "📸"}</span>
+                    <span className="font-semibold text-slate-800">
+                      {uploading ? "Uploading…" : "Select images"}
+                    </span>
+                    <span className="text-xs text-slate-500">PNG or JPG, add as many as you like</span>
+                  </button>
+
+                  {images.length > 0 && (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-[#FF3D6B]/10 px-3 py-1 text-xs font-semibold text-[#E8325E]">
+                        {images.length} {images.length === 1 ? "image" : "images"} selected
+                      </span>
+                      <button
+                        type="button"
+                        onClick={photoupload}
+                        className="rounded-full bg-slate-900 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-700"
+                      >
+                        Upload photos
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="mt-1 h-12 w-full rounded-xl bg-[#FF3D6B] text-base font-bold text-white shadow-lg shadow-[#FF3D6B]/30 transition hover:bg-[#e8325e] active:scale-[0.99] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#FF3D6B]/30"
+                >
+                  {creatingProduct ? (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <span className="animate-spin">⏳</span>
+                      Creating listing…
+                    </span>
+                  ) : submitted ? (
+                    "Listing created!"
+                  ) : (
+                    "List my item"
+                  )}
+                </button>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+);
 }
       
